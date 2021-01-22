@@ -1,5 +1,5 @@
 var app = {
-  version: "a.1.0.0",
+  version: "a.1.1.0",
   device: device(),
   language: language()
 };
@@ -19,6 +19,7 @@ function load(){
   control_keydown_set();
   control_keyup_set();
   engine_load();
+  interface_load();
 }
 
 function load_file(){
@@ -35,7 +36,8 @@ function load_file_list_css(device){
   // --- Desktop Files
   if (device == "desktop") {
     tmp_file_list = tmp_file_list.concat([
-      "css/desktop/engine.css"
+      "css/desktop/engine.css",
+      "css/desktop/interface.css"
     ]);
   }
   // --- Smartphone Files
@@ -60,7 +62,8 @@ function load_file_list_js(device){
       "js/desktop/control.js",
       "js/desktop/player.js",
       "js/desktop/entity.js",
-      "js/desktop/engine.js"
+      "js/desktop/engine.js",
+      "js/desktop/interface.js"
     ]);
   }
   // --- Smartphone Files

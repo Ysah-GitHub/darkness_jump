@@ -16,23 +16,28 @@ function engine_element_remove(name){
 function engine_load(){
   engine.element = [];
   engine.event = [];
-  engine_size_default();
+  engine_size_auto();
 
   player_load();
   engine_element_add("engine_draw_player", engine_draw_player);
-  engine_element_add("engine_draw_start", engine_draw_start);
 
   engine_create();
-
-  engine_event_click_set();
-  engine_event_click_add("engine_start", engine_start, ((engine.width / 2) - 110), ((engine.height / 2) - 60), 220, 80);
-
   engine.refresh = window.requestAnimationFrame(engine_refresh);
+
+  window.addEventListener("resize", engine_resize);
 }
 
-function engine_size_default(){
+function engine_size_auto(){
   engine.width = window.innerWidth;
   engine.height = window.innerHeight / 2;
+}
+
+function engine_resize(){
+  engine_size_auto();
+  player_limit_default();
+  player_position_default();
+  document.getElementById("engine").width = engine.width;
+  document.getElementById("engine").height = engine.height;
 }
 
 function engine_create(){
@@ -44,7 +49,8 @@ function engine_create(){
 }
 
 function engine_start(){
-  console.log("start !");
+  interface_start_remove();
+  interface_options_remove();
 }
 
 function engine_refresh(){
@@ -58,44 +64,7 @@ function engine_refresh(){
   engine.refresh = window.requestAnimationFrame(engine_refresh);
 }
 
-function engine_event_click_set(){
-  engine.event.click = [];
-  document.getElementById("engine").addEventListener("click", engine_event_click);
-}
-
-function engine_event_click_unset(){
-  delete engine.event.click;
-  document.getElementById("engine").removeEventListener("click", engine_event_click);
-}
-
-function engine_event_click(event){
-  // console.log("x : " + event.clientX);
-  // console.log("y : " + event.clientY);
-  // console.log("------------");
-  for (let i = 0; i < engine.event.click.length; i++) {
-    if (
-      event.clientX > engine.event.click[i][2] &&
-      event.clientX < engine.event.click[i][2] + engine.event.click[i][4] &&
-      event.clientY > engine.event.click[i][3] &&
-      event.clientY < engine.event.click[i][3] + engine.event.click[i][5]
-    ) {
-      engine.event.click[i][1]();
-    }
-  }
-}
-
-function engine_event_click_add(name, func, x, y, width, height){
-  engine.event.click.push([name, func, x, y, width, height]);
-}
-
 function engine_draw_player(ctx){
   ctx.fillStyle = player.color;
   ctx.fillRect(player.x, player.y, player.width, player.height);
-}
-
-function engine_draw_start(ctx){
-  ctx.font = "60px Lucida Console";
-  ctx.fillStyle = "rgb(255, 255, 255)";
-  ctx.textAlign = "center";
-  ctx.fillText("Start", (engine.width / 2), (engine.height / 2));
 }

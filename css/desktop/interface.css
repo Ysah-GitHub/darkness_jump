@@ -1,0 +1,31 @@
+#interface{
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
+#interface_start, #interface_options{
+  width: 300px;
+  padding: 20px;
+  text-align: center;
+  background-color: rgba(40, 40, 40, 0.8);
+  border: 1px solid rgb(25, 25, 25);
+  border-radius: 10px;
+  font-size: 30px;
+  font-family: "Lucida Console";
+  color: rgb(255, 255, 255);
+  user-select: none;
+  transition: 0.1s linear;
+}
+#interface_start:hover, #interface_options:hover{
+  cursor: pointer;
+  background-color: rgba(50, 50, 50, 0.8);
+}
+
+#interface_start{
+  margin: calc(25vh - 35px) 0 0 calc(50vw - 170px);
+}
+
+#interface_options{
+  margin: 35px 0 0 calc(50vw - 170px);
+}

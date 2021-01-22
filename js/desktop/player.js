@@ -1,21 +1,15 @@
-var player = {
-  width: 50,
-  height: 50,
-  x: null,
-  y: null,
-  x_min: null,
-  x_max: null,
-  y_min: null,
-  y_max: null,
-  speed: 1,
-  move: {key: [], action: [], interval: null},
-  jump: {double: false, timeout: null},
-  color: "rgb(50, 170, 255)"
-};
+var player = {};
 
 function player_load(){
+  player_size_default();
   player_position_default();
   player_limit_default();
+  player_speed_default();
+  player_color_default();
+
+  player.move = {key: [], action: [], interval: null};
+  player.jump = {active: false, timeout: null};
+
   player_control_default();
 }
 
@@ -24,11 +18,24 @@ function player_position_default(){
   player.y = (engine.height - player.height);
 }
 
+function player_size_default(){
+  player.width = 50;
+  player.height = 50;
+}
+
 function player_limit_default(){
   player.x_min = 0;
   player.x_max = (engine.width - player.width);
   player.y_min = (engine.height - player.height);
   player.y_max = (0 + player.height);
+}
+
+function player_speed_default(){
+  player.speed = 1;
+}
+
+function player_color_default(){
+  player.color = "rgb(50, 170, 255)";
 }
 
 function player_control_default(){
@@ -94,51 +101,60 @@ function player_move_right(){
 }
 
 function player_jump(){
+  player.jump.active = true;
+
+  control_keyup_action_add("jump", "player_jump_clear", player_jump_clear, [], true);
   control_keyup_action_add("jump", "player_jump_stop", player_jump_stop, [], true);
-  control_keyup_action_add("jump", "player_jump_down", function(){
+  control_keyup_action_add("jump", "player_jump_down", player_jump_down, [0], true);
+  control_keyup_action_add("jump", "player_jump_double", function(){
     control_keydown_action_add("jump", "player_jump_double", player_jump_double, [], true);
-    player_jump_down();
   }, [], true);
-  player_jump_up(0);
-  player.jump.double = true;
+
+  player_jump_up(player.speed);
 }
 
-function player_jump_up(height){
-  if (height < 250) {
-    let tmp_height = (5 * (player.speed * 0.8));
-    height += tmp_height
-    player.y -= tmp_height;
-    player.jump.timeout = setTimeout(player_jump_up, 5, height);
+function player_jump_up(velocity){
+  velocity -= 0.02;
+  if (velocity > 0) {
+    player.y -= (10 * velocity);
+    player.jump.timeout = setTimeout(player_jump_up, 5, velocity);
   }
   else {
-    control_keyup_action_remove("jump", "player_jump_stop");
+    control_keyup_action_remove("jump", "player_jump_clear");
     control_keyup_action_remove("jump", "player_jump_down");
-    player_jump_stop();
-    player_jump_down();
+    player_jump_clear();
+    player_jump_down(0);
   }
 }
 
-function player_jump_down(){
+function player_jump_down(velocity){
+  velocity += 0.02;
   if (player.y < player.y_min) {
-    player.y += (5 * player.speed);
-    player.jump.timeout = setTimeout(player_jump_down, 5);
+    player.y += (10 * velocity);
+    player.jump.timeout = setTimeout(player_jump_down, 5, velocity);
   }
   else {
-    player.y = player.y_min;
     control_keydown_action_remove("jump", "player_jump_double");
-    control_keydown_action_add("jump", "player_jump", player_jump, [], true);
-    player.jump.double = true;
+    player.y = player.y_min;
+
+    if (player.jump.active) {
+      player_jump_up(player.speed);
+    }
+    else {
+      control_keydown_action_add("jump", "player_jump", player_jump, [], true);
+    }
   }
 }
 
 function player_jump_double(){
-  if (player.jump.double) {
-    player.jump.double = false;
-    player_jump_stop();
-    player_jump_up(100);
-  }
+  player_jump_clear();
+  player_jump_up(player.speed);
+}
+
+function player_jump_clear(){
+  clearTimeout(player.jump.timeout);
 }
 
 function player_jump_stop(){
-  clearTimeout(player.jump.timeout);
+  player.jump.active = false;
 }
