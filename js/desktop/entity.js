@@ -1,22 +1,32 @@
 var entity = {
-  generate: {
-    speed: 1,
-    number: 0,
-    timeout: null
-  },
-  list: [] // [width, height, x, y, speed, color]
+  score: 0,
+  list: {},
+  spawnrate: 1,
+  timeout: null
 }
 
 function entity_generate(){
-  entity.list.push([50, 50, , engine.width, 1, "rgb(255, 75, 75)"]);
-  entity.generate.timeout = setTimeout(entity_generate, ((((Math.floor(Math.random() * 10) + 1) * entity.generate.speed) * 100)));
+  entity.score++;
+  entity.list[entity.score] = {
+    id: entity.score,
+    width: 50,
+    height: 50,
+    x: engine.width,
+    y: (engine.height - 50),
+    speed: 1,
+    color: "rgb(255, 75, 75)",
+    move: {func: function(){entity_move_left(entity.list[entity.score])}, interval: null}
+  };
+  entity.list[entity.score].move.func();
+  entity.timeout = setTimeout(entity_generate, ((((Math.floor(Math.random() * 10) + 1) * entity.spawnrate) * 100)));
 }
 
-// function entity_move_left(entity){
-//   player.move.interval = setInterval(function(){
-//     player.x -= 5 * player.speed;
-//     if (player.x < player.x_min) {
-//       player.x = player.x_min;
-//     }
-//   }, 5);
-// }
+function entity_move_left(tmp_entity){
+  tmp_entity.move.interval = setInterval(function(){
+    tmp_entity.x -= 5 * tmp_entity.speed;
+    if (tmp_entity.x < (0 - tmp_entity.width)) {
+      clearInterval(tmp_entity.move.interval);
+      delete entity.list[tmp_entity.id];
+    }
+  }, 5);
+}

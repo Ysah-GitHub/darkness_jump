@@ -51,6 +51,8 @@ function engine_create(){
 function engine_start(){
   interface_start_remove();
   interface_options_remove();
+  entity_generate();
+  engine_element_add("engine_draw_entity", engine_draw_entity);
 }
 
 function engine_refresh(){
@@ -67,4 +69,12 @@ function engine_refresh(){
 function engine_draw_player(ctx){
   ctx.fillStyle = player.color;
   ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function engine_draw_entity(ctx){
+  for (let i = 0; i < Object.keys(entity.list).length; i++) {
+    let tmp_entity = entity.list[Object.keys(entity.list)[i]]
+    ctx.fillStyle = tmp_entity.color;
+    ctx.fillRect(tmp_entity.x, tmp_entity.y, tmp_entity.width, tmp_entity.height);
+  }
 }

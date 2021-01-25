@@ -1,5 +1,5 @@
 var app = {
-  version: "a.1.1.0",
+  version: "a.1.1.1",
   device: device(),
   language: language()
 };
