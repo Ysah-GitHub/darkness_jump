@@ -14,7 +14,11 @@ function interface_start_create(){
   let tmp_start = document.createElement("div");
   tmp_start.id = "interface_start";
   tmp_start.textContent = "Start";
-  tmp_start.onclick = engine_start;
+  tmp_start.onclick = function(){
+    interface_start_remove();
+    interface_options_remove();
+    engine_start();
+  };
   document.getElementById("interface").prepend(tmp_start);
 }
 
@@ -26,6 +30,11 @@ function interface_options_create(){
   let tmp_options = document.createElement("div");
   tmp_options.id = "interface_options";
   tmp_options.textContent = "Options";
+  tmp_options.onclick = function(){
+    interface_start_remove();
+    interface_options_remove();
+    options_create();
+  };
   document.getElementById("interface_start").after(tmp_options);
 }
 

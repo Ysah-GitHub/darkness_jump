@@ -1,4 +1,17 @@
-var player = {};
+var player = {
+  width: null,
+  height: null,
+  x: null,
+  x_min: null,
+  x_max: null,
+  y: null,
+  y_min: null,
+  y_max: null,
+  speed: null,
+  color: null,
+  move: {key: [], action: [], interval: null, base: null},
+  jump: {active: false, timeout: null, base: null}
+};
 
 function player_load(){
   player_size_default();
@@ -6,28 +19,26 @@ function player_load(){
   player_limit_default();
   player_speed_default();
   player_color_default();
-
-  player.move = {key: [], action: [], interval: null};
-  player.jump = {active: false, timeout: null};
-
+  player_move_value_default();
+  player_jump_value_default();
   player_control_default();
 }
 
 function player_position_default(){
-  player.x = 100;
-  player.y = (engine.height - player.height);
+  player.x = (engine.width / 15);
+  player.y = (engine.ground.height - player.height);
 }
 
 function player_size_default(){
-  player.width = 50;
-  player.height = 50;
+  player.width = Math.round(engine.height / 30);
+  player.height = Math.round(engine.height / 30);
 }
 
 function player_limit_default(){
   player.x_min = 0;
   player.x_max = (engine.width - player.width);
-  player.y_min = (engine.height - player.height);
-  player.y_max = (0 + player.height);
+  player.y_min = (engine.ground.height - player.height);
+  player.y_max = 0;
 }
 
 function player_speed_default(){
@@ -82,9 +93,13 @@ function player_move_stop(){
   clearInterval(player.move.interval);
 }
 
+function player_move_value_default(){
+  player.move.base = (player.width / 8);
+}
+
 function player_move_left(){
   player.move.interval = setInterval(function(){
-    player.x -= 5 * player.speed;
+    player.x -= player.move.base * player.speed;
     if (player.x < player.x_min) {
       player.x = player.x_min;
     }
@@ -93,7 +108,7 @@ function player_move_left(){
 
 function player_move_right(){
   player.move.interval = setInterval(function(){
-    player.x += 5 * player.speed;
+    player.x += player.move.base * player.speed;
     if (player.x > player.x_max) {
       player.x = player.x_max;
     }
@@ -113,10 +128,14 @@ function player_jump(){
   player_jump_up(player.speed);
 }
 
+function player_jump_value_default(){
+  player.jump.base = (player.height / 4);
+}
+
 function player_jump_up(velocity){
   velocity -= 0.02;
-  if (velocity > 0) {
-    player.y -= (10 * velocity);
+  if (velocity > 0 && player.y > player.y_max) {
+    player.y -= (player.jump.base * velocity);
     player.jump.timeout = setTimeout(player_jump_up, 5, velocity);
   }
   else {
@@ -130,7 +149,7 @@ function player_jump_up(velocity){
 function player_jump_down(velocity){
   velocity += 0.02;
   if (player.y < player.y_min) {
-    player.y += (10 * velocity);
+    player.y += (player.jump.base * velocity);
     player.jump.timeout = setTimeout(player_jump_down, 5, velocity);
   }
   else {

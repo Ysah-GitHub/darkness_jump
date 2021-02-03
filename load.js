@@ -1,5 +1,5 @@
 var app = {
-  version: "a.1.1.1",
+  version: "a.1.2.0",
   device: device(),
   language: language()
 };
@@ -36,8 +36,11 @@ function load_file_list_css(device){
   // --- Desktop Files
   if (device == "desktop") {
     tmp_file_list = tmp_file_list.concat([
+      "css/desktop/animation.css",
       "css/desktop/engine.css",
-      "css/desktop/interface.css"
+      "css/desktop/interface.css",
+      "css/desktop/options.css",
+      "css/desktop/icon.css"
     ]);
   }
   // --- Smartphone Files
@@ -63,7 +66,9 @@ function load_file_list_js(device){
       "js/desktop/player.js",
       "js/desktop/entity.js",
       "js/desktop/engine.js",
-      "js/desktop/interface.js"
+      "js/desktop/interface.js",
+      "js/desktop/options.js",
+      "js/desktop/icon.js"
     ]);
   }
   // --- Smartphone Files

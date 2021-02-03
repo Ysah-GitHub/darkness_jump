@@ -6,26 +6,26 @@
 
 #interface_start, #interface_options{
   width: 300px;
-  padding: 20px;
+  padding: 25px;
   text-align: center;
-  background-color: rgba(40, 40, 40, 0.8);
-  border: 1px solid rgb(25, 25, 25);
   border-radius: 10px;
-  font-size: 30px;
-  font-family: "Lucida Console";
-  color: rgb(255, 255, 255);
+  font-family: "gb";
+  color: rgb(125, 125, 125);
   user-select: none;
   transition: 0.1s linear;
 }
 #interface_start:hover, #interface_options:hover{
   cursor: pointer;
-  background-color: rgba(50, 50, 50, 0.8);
+  color: rgb(255, 255, 255);
+  transform: scale(1.2);
 }
 
 #interface_start{
   margin: calc(25vh - 35px) 0 0 calc(50vw - 170px);
+  font-size: 40px;
 }
 
 #interface_options{
-  margin: 35px 0 0 calc(50vw - 170px);
+  margin: 15px 0 0 calc(50vw - 170px);
+  font-size: 20px;
 }

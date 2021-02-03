@@ -1,0 +1,17 @@
+#icon_close_options{
+  position: absolute;
+  right: 0;
+  height: 64px;
+  transition: 0.1s linear;
+}
+#icon_close_options:hover{
+  cursor: pointer;
+  background-color: rgba(255, 75, 75, 0.6);
+}
+
+#icon_close_options > canvas{
+  transition: 0.1s linear;
+}
+#icon_close_options:hover > canvas{
+  filter: brightness(3);
+}
