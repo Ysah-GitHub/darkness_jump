@@ -1,8 +1,26 @@
 var control = {
-  default: {left: 37, right: 39, jump: 32, start: 13},
-  custom: {left: null, right: null, jump: null, start: null},
   action_keydown: {left: [], right: [], jump: [], start: []},
   action_keyup: {left: [], right: [], jump: [], start: []}
+}
+
+function control_load_default(){
+  let tmp_control_default = engine.config.input;
+  if (app.language == "fr") {
+    tmp_control_default.left.key = "q";
+    tmp_control_default.left.keyCode = 81;
+  }
+  else {
+    tmp_control_default.left.key = "a";
+    tmp_control_default.left.keyCode = 65;
+  }
+  tmp_control_default.right.key = "d";
+  tmp_control_default.right.keyCode = 68;
+  tmp_control_default.jump.key = "space";
+  tmp_control_default.jump.keyCode = 32;
+  tmp_control_default.start.key = "enter";
+  tmp_control_default.start.keyCode = 13;
+
+  return tmp_control_default;
 }
 
 function control_keydown_set(){
@@ -15,10 +33,10 @@ function control_keydown_unset(){
 
 function control_keydown(){
   switch (event.keyCode) {
-    case control.default["left"]: control_keydown_action("left"); break;
-    case control.default["right"]: control_keydown_action("right"); break;
-    case control.default["jump"]: control_keydown_action("jump"); break;
-    case control.default["start"]: control_keydown_action("start"); break;
+    case engine.config.input["left"].keyCode: control_keydown_action("left"); break;
+    case engine.config.input["right"].keyCode: control_keydown_action("right"); break;
+    case engine.config.input["jump"].keyCode: control_keydown_action("jump"); break;
+    case engine.config.input["start"].keyCode: control_keydown_action("start"); break;
   }
 }
 
@@ -69,10 +87,10 @@ function control_keyup_unset(){
 
 function control_keyup(){
   switch (event.keyCode) {
-    case control.default["left"]: control_keyup_action("left"); break;
-    case control.default["right"]: control_keyup_action("right"); break;
-    case control.default["jump"]: control_keyup_action("jump"); break;
-    case control.default["start"]: control_keyup_action("start"); break;
+    case engine.config.input["left"].keyCode: control_keyup_action("left"); break;
+    case engine.config.input["right"].keyCode: control_keyup_action("right"); break;
+    case engine.config.input["jump"].keyCode: control_keyup_action("jump"); break;
+    case engine.config.input["start"].keyCode: control_keyup_action("start"); break;
   }
 }
 

@@ -4,11 +4,31 @@ var engine = {
   element: [],
   ground: {height: null},
   refresh: null,
+  stage: {
+    current: null,
+    nostalgia: {
+      score: 0,
+      lastscore: 0,
+      hightscore: 0
+    }
+  },
   config: {
     video: {
       resolution: {id: null, value: null},
       framerate: {id: null, value: null}
     },
+    interface: {
+      resolution: {id: null, value: null}
+    },
+    input: {
+      left: {key: null, keyCode: null},
+      right: {key: null, keyCode: null},
+      jump: {key: null, keyCode: null},
+      start: {key: null, keyCode: null}
+    },
+    audio: {
+      volume: null
+    }
   }
 };
 
@@ -27,6 +47,13 @@ function engine_config_load_default(){
   engine.config.video.resolution.value = window.outerWidth + "x" + window.outerHeight;
   engine.config.video.framerate.id = 0;
   engine.config.video.framerate.value = "Auto";
+
+  engine.config.interface.resolution.id = 0;
+  engine.config.interface.resolution.value = window.outerWidth + "x" + window.outerHeight;
+
+  engine.config.input = control_load_default();
+
+  engine.config.audio.volume = 0.35;
 }
 
 function engine_config_save(){
@@ -35,6 +62,7 @@ function engine_config_save(){
 
 function engine_load(){
   engine_config_load();
+  stage_load();
 
   engine_resolution(engine.config.video.resolution.value);
   engine.ground.height = (engine.height / 2);
@@ -47,6 +75,9 @@ function engine_load(){
 
   engine_create();
   engine_refresh_start();
+
+  control_keydown_set();
+  control_keyup_set();
 }
 
 function engine_refresh_start(){
@@ -122,16 +153,38 @@ function engine_create(){
   document.body.prepend(tmp_engine);
 }
 
-function engine_start(){
-  dev_entity_start();
-  engine_element_add("engine_draw_entity", engine_draw_entity);
+function engine_reset(){
+  player_move_clear();
+  player_jump_clear();
+  player_control_remove();
+  player_move_value_reset();
+  player_jump_value_reset();
+
+  player_position_default();
+  player_move_value_default();
+  player_jump_value_default();
+  player_control_default();
+
+  engine_element_remove("engine_draw_player");
+  engine_element_remove("engine_draw_entity");
+
+  engine_element_add("engine_draw_player", engine_draw_player);
+
+  entity_reload();
+  entity_move_value_default();
+  stage_score_reset();
 }
-
-
 
 function engine_draw_player(ctx){
   ctx.fillStyle = player.color;
   ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function engine_draw_player_explosion(ctx){
+  ctx.fillStyle = player.color;
+  for (let i = 0; i < player.explosion.list.length; i++) {
+    ctx.fillRect(player.explosion.list[i].x, player.explosion.list[i].y, player.explosion.width, player.explosion.height);
+  }
 }
 
 function engine_draw_entity(ctx){

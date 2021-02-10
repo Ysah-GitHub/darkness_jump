@@ -1,7 +1,6 @@
 #icon_close_options{
   position: absolute;
   right: 0;
-  height: 64px;
   transition: 0.1s linear;
 }
 #icon_close_options:hover{

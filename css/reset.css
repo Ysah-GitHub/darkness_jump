@@ -10,3 +10,14 @@ select{
 option{
   background: inherit;
 }
+
+
+input[type=range]{
+  -webkit-appearance: none;
+}
+input[type=range]:focus{
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance: none;
+}

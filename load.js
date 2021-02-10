@@ -1,5 +1,5 @@
 var app = {
-  version: "a.1.2.0",
+  version: "a.1.3.0",
   device: device(),
   language: language()
 };
@@ -16,8 +16,6 @@ function service_worker(){
 }
 
 function load(){
-  control_keydown_set();
-  control_keyup_set();
   engine_load();
   interface_load();
 }
@@ -39,7 +37,6 @@ function load_file_list_css(device){
       "css/desktop/animation.css",
       "css/desktop/engine.css",
       "css/desktop/interface.css",
-      "css/desktop/options.css",
       "css/desktop/icon.css"
     ]);
   }
@@ -67,8 +64,9 @@ function load_file_list_js(device){
       "js/desktop/entity.js",
       "js/desktop/engine.js",
       "js/desktop/interface.js",
-      "js/desktop/options.js",
-      "js/desktop/icon.js"
+      "js/desktop/icon.js",
+      "js/desktop/stage.js",
+      "js/desktop/music.js"
     ]);
   }
   // --- Smartphone Files

@@ -1,31 +1,153 @@
 #interface{
   position: absolute;
-  width: 100vw;
-  height: 100vh;
 }
 
-#interface_start, #interface_options{
-  width: 300px;
-  padding: 25px;
+#interface_menu{
+  animation-name: animation_menu;
+  animation-duration: 0.3s;
+}
+
+#menu_start, #menu_options{
+  margin-right: auto;
+  margin-left: auto;
   text-align: center;
-  border-radius: 10px;
   font-family: "gb";
   color: rgb(125, 125, 125);
   user-select: none;
   transition: 0.1s linear;
 }
-#interface_start:hover, #interface_options:hover{
+#menu_start:hover, #menu_options:hover{
   cursor: pointer;
   color: rgb(255, 255, 255);
   transform: scale(1.2);
 }
 
-#interface_start{
-  margin: calc(25vh - 35px) 0 0 calc(50vw - 170px);
-  font-size: 40px;
+.menu_stage{
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+  font-family: "gb";
+  color: rgb(125, 125, 125);
+  user-select: none;
+  transition: 0.1s linear;
+}
+.menu_stage:hover{
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  transform: scale(1.2);
+}
+
+#menu_score{
+  position: absolute;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  font-family: "gb";
+  color: rgb(125, 125, 125);
+  user-select: none;
+  transition: 0.1s linear;
 }
 
 #interface_options{
-  margin: 15px 0 0 calc(50vw - 170px);
-  font-size: 20px;
+  animation-name: animation_menu;
+  animation-duration: 0.3s;
+}
+
+#options_left{
+  display: inline-block;
+  background-color: rgb(55, 55, 55);
+}
+
+#options_left > *{
+  border-bottom: 4px solid rgb(45, 45, 45);
+  border-left: 0px solid rgb(45, 45, 45);
+  transition: 0.1s linear;
+}
+#options_left > *:hover{
+  cursor: pointer;
+  background-color: rgb(75, 75, 75);
+}
+
+#options_left > *.active{
+  background-color: rgb(75, 75, 75);
+  border-left: 32px solid rgb(45, 45, 45);
+}
+#options_left > *.active > *{
+  filter: brightness(3);
+}
+
+#options_left > * > *{
+  transition: 0.1s linear;
+}
+#options_left > *:hover > *{
+  filter: brightness(3);
+}
+
+#options_right{
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 64px;
+  background-color: rgb(55, 55, 55);
+}
+
+#options_title{
+  display: block;
+  margin-left: 16px;
+  color: rgb(255, 255, 255);
+  font-family: "gb";
+  user-select: none;
+}
+
+.options_name{
+  width: 40%;
+  margin: 5% 5% 0 5%;
+  color: rgb(150, 150, 150);
+  font-family: "gb";
+  user-select: none;
+}
+
+.options_select{
+  border: 1px solid rgb(80, 80, 80);
+  background: rgb(55, 55, 55);
+  color: rgb(255, 255, 255);
+  font-family: "gb";
+}
+
+.options_input_key{
+  width: 25%;
+  text-align: center;
+  border: 1px solid rgb(80, 80, 80);
+  box-sizing: border-box;
+  background: rgb(55, 55, 55);
+  color: rgb(255, 255, 255);
+  font-family: "gb";
+  user-select: none;
+}
+.options_input_key:hover{
+  cursor: text;
+}
+
+.options_input_key_icon{
+  vertical-align: bottom;
+}
+.options_input_key_icon:hover{
+  cursor: pointer;
+  filter: brightness(3);
+  transition: 0.1s linear;
+}
+
+.option_range{
+  height: var(--option_range_height);
+  width: 40%;
+  vertical-align: middle;
+  background: rgb(40, 40, 40);
+}
+.option_range::-webkit-slider-thumb{
+  height: calc(var(--option_range_height) * 3);
+  width: calc(var(--option_range_height) * 2);
+  background: rgb(80, 80, 80);
+}
+.option_range::-webkit-slider-thumb:hover{
+  cursor: grab;
 }

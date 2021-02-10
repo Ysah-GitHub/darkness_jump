@@ -9,10 +9,6 @@ span{
   display: inline-block;
 }
 
-.text{
-  font-family: "gb";
-}
-
 .canvas{
   font-size: 0;
 }
