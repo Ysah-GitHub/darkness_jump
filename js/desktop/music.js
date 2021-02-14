@@ -33,5 +33,7 @@ function music_stop(){
 
 function music_volume_update(volume){
   engine.config.audio.volume = volume;
-  music.curent.volume = engine.config.audio.volume;
+  if (music.curent != null) {
+    music.curent.volume = engine.config.audio.volume;
+  }
 }

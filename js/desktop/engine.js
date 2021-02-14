@@ -2,7 +2,6 @@ var engine = {
   width: null,
   height: null,
   element: [],
-  ground: {height: null},
   refresh: null,
   stage: {
     current: null,
@@ -18,19 +17,25 @@ var engine = {
       framerate: {id: null, value: null}
     },
     interface: {
-      resolution: {id: null, value: null}
+      ground_height: null,
+      ground_color: null
     },
     input: {
       left: {key: null, keyCode: null},
       right: {key: null, keyCode: null},
       jump: {key: null, keyCode: null},
-      start: {key: null, keyCode: null}
+      start: {key: null, keyCode: null},
+      return: {key: null, keyCode: null}
     },
     audio: {
       volume: null
     }
   }
 };
+
+function engine_config_save(){
+  localStorage.setItem("engine_config", JSON.stringify(engine.config));
+}
 
 function engine_config_load(){
   if (localStorage.getItem("engine_config")) {
@@ -44,28 +49,72 @@ function engine_config_load(){
 
 function engine_config_load_default(){
   engine.config.video.resolution.id = 0;
-  engine.config.video.resolution.value = window.outerWidth + "x" + window.outerHeight;
+  engine.config.video.resolution.value = screen.width + "x" + screen.height;
   engine.config.video.framerate.id = 0;
   engine.config.video.framerate.value = "Auto";
 
-  engine.config.interface.resolution.id = 0;
-  engine.config.interface.resolution.value = window.outerWidth + "x" + window.outerHeight;
+  engine.config.interface.ground_color = "#555555";
 
   engine.config.input = control_load_default();
 
   engine.config.audio.volume = 0.35;
 }
 
-function engine_config_save(){
-  localStorage.setItem("engine_config", JSON.stringify(engine.config));
+function engine_resolution(resolution){
+  engine.width = Number(resolution.split("x")[0]);
+  engine.height = Number(resolution.split("x")[1]);
+  engine.config.interface.ground_height = engine.height / 2;
+}
+
+function engine_resolution_update(){
+  document.documentElement.style.setProperty("--engine_width", engine.width + "px");
+  document.documentElement.style.setProperty("--engine_height", engine.height + "px");
+  document.getElementById("engine").width = engine.width;
+  document.getElementById("engine").height = engine.height;
+
+  player_size_default()
+  player_limit_default();
+  player_position_default();
+  player_move_value_default();
+  player_jump_value_default();
+  entity_size_default();
+  entity_move_value_default();
+}
+
+function engine_resolution_list(){
+  let tmp_resolution_list_available = [screen.width + "x" + screen.height];
+  let tmp_resolution_list = [
+    "1024x768",
+    "1366x768",
+    "1920x1080",
+    "2560x1080",
+    "3840x1080",
+    "2560x1440",
+    "3440x1440",
+    "5120x1440",
+    "3840x2160",
+    "5120x2160"
+  ];
+
+  for (let i = 0; i < tmp_resolution_list.length; i++) {
+    if (
+      screen.width >= Number(tmp_resolution_list[i].split("x")[0]) &&
+      screen.height >= Number(tmp_resolution_list[i].split("x")[1])
+    ) {
+      tmp_resolution_list_available.push(tmp_resolution_list[i]);
+    }
+  }
+
+  return tmp_resolution_list_available;
 }
 
 function engine_load(){
   engine_config_load();
   stage_load();
 
+  engine_create();
   engine_resolution(engine.config.video.resolution.value);
-  engine.ground.height = (engine.height / 2);
+  engine_resolution_update();
 
   player_load();
   entity_load();
@@ -73,11 +122,21 @@ function engine_load(){
   engine_element_add("engine_draw_player", engine_draw_player);
   engine_element_add("engine_draw_ground", engine_draw_ground);
 
-  engine_create();
   engine_refresh_start();
 
   control_keydown_set();
   control_keyup_set();
+
+  interface_create();
+  interface_menu_create();
+}
+
+function engine_refresh(){
+  let ctx = document.getElementById("engine").getContext("2d");
+  ctx.clearRect(0, 0, engine.width, engine.height);
+  for (let i = 0; i < engine.element.length; i++) {
+    engine.element[i][1](ctx);
+  }
 }
 
 function engine_refresh_start(){
@@ -103,14 +162,6 @@ function engine_refresh_auto(){
   engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
 }
 
-function engine_refresh(){
-  let ctx = document.getElementById("engine").getContext("2d");
-  ctx.clearRect(0, 0, engine.width, engine.height);
-  for (let i = 0; i < engine.element.length; i++) {
-    engine.element[i][1](ctx);
-  }
-}
-
 function engine_element_add(name, func, arguments){
   engine.element.push([name, func, arguments]);
 }
@@ -124,32 +175,9 @@ function engine_element_remove(name){
   }
 }
 
-function engine_resolution(resolution){
-  engine.width = Number(resolution.split("x")[0]);
-  engine.height = Number(resolution.split("x")[1]);
-}
-
-function engine_resolution_resize(){
-  engine.ground.height = (engine.height / 2);
-
-  player_size_default()
-  player_limit_default();
-  player_position_default();
-  player_move_value_default();
-  player_jump_value_default();
-
-  entity_size_default();
-  entity_move_value_default();
-
-  document.getElementById("engine").width = engine.width;
-  document.getElementById("engine").height = engine.height;
-}
-
 function engine_create(){
   let tmp_engine = document.createElement("canvas");
   tmp_engine.id = "engine";
-  tmp_engine.width = engine.width;
-  tmp_engine.height = engine.height;
   document.body.prepend(tmp_engine);
 }
 
@@ -196,9 +224,9 @@ function engine_draw_entity(ctx){
 }
 
 function engine_draw_ground(ctx){
-  ctx.strokeStyle = "rgb(75, 75, 75)";
+  ctx.strokeStyle = engine.config.interface.ground_color;
   ctx.beginPath();
-  ctx.moveTo(0, engine.ground.height);
-  ctx.lineTo(engine.width, engine.ground.height);
+  ctx.moveTo(0, engine.config.interface.ground_height);
+  ctx.lineTo(engine.width, engine.config.interface.ground_height);
   ctx.stroke();
 }

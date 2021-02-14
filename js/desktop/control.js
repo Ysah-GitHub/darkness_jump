@@ -1,25 +1,20 @@
 var control = {
-  action_keydown: {left: [], right: [], jump: [], start: []},
-  action_keyup: {left: [], right: [], jump: [], start: []}
+  action_keydown: {left: [], right: [], jump: [], start: [], return: []},
+  action_keyup: {left: [], right: [], jump: [], start: [], return: []}
 }
 
 function control_load_default(){
   let tmp_control_default = engine.config.input;
-  if (app.language == "fr") {
-    tmp_control_default.left.key = "q";
-    tmp_control_default.left.keyCode = 81;
-  }
-  else {
-    tmp_control_default.left.key = "a";
-    tmp_control_default.left.keyCode = 65;
-  }
-  tmp_control_default.right.key = "d";
-  tmp_control_default.right.keyCode = 68;
-  tmp_control_default.jump.key = "space";
+  tmp_control_default.left.key = "ArrowLeft";
+  tmp_control_default.left.keyCode = 37;
+  tmp_control_default.right.key = "ArrowRight";
+  tmp_control_default.right.keyCode = 39;
+  tmp_control_default.jump.key = "Space";
   tmp_control_default.jump.keyCode = 32;
-  tmp_control_default.start.key = "enter";
+  tmp_control_default.start.key = "Enter";
   tmp_control_default.start.keyCode = 13;
-
+  tmp_control_default.return.key = "Backspace";
+  tmp_control_default.return.keyCode = 8;
   return tmp_control_default;
 }
 
@@ -37,6 +32,7 @@ function control_keydown(){
     case engine.config.input["right"].keyCode: control_keydown_action("right"); break;
     case engine.config.input["jump"].keyCode: control_keydown_action("jump"); break;
     case engine.config.input["start"].keyCode: control_keydown_action("start"); break;
+    case engine.config.input["return"].keyCode: control_keydown_action("return"); break;
   }
 }
 
@@ -75,6 +71,7 @@ function control_keydown_action_reset_all(){
   control_keydown_action_reset("right");
   control_keydown_action_reset("jump");
   control_keydown_action_reset("start");
+  control_keydown_action_reset("return");
 }
 
 function control_keyup_set(){
@@ -91,6 +88,7 @@ function control_keyup(){
     case engine.config.input["right"].keyCode: control_keyup_action("right"); break;
     case engine.config.input["jump"].keyCode: control_keyup_action("jump"); break;
     case engine.config.input["start"].keyCode: control_keyup_action("start"); break;
+    case engine.config.input["return"].keyCode: control_keyup_action("return"); break;
   }
 }
 
@@ -129,4 +127,5 @@ function control_keyup_action_reset_all(){
   control_keyup_action_reset("right");
   control_keyup_action_reset("jump");
   control_keyup_action_reset("start");
+  control_keyup_action_reset("return");
 }

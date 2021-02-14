@@ -1,0 +1,129 @@
+#interface_options{
+  animation-name: animation_menu;
+  animation-duration: 0.3s;
+}
+
+#options_left{
+  display: inline-block;
+  width: calc(var(--engine_height) * 0.1);
+  height: calc(var(--engine_height) * 0.7);
+  margin-top: calc(var(--engine_height) * 0.15);
+  margin-left: calc((var(--engine_width) * 0.5) - (var(--engine_height) * 0.45 + 64px)); /*(engine.height / 2) - (options_right.width / 2) - (options_left.width + 64)*/
+  background-color: rgb(55, 55, 55);
+}
+
+#options_left > *{
+  padding: calc(var(--engine_height) * 0.0125) calc(var(--engine_height) * 0.025);
+  border-bottom: 4px solid rgb(45, 45, 45);
+  border-left: 0px solid rgb(45, 45, 45);
+  transition: 0.1s linear;
+}
+#options_left > *:hover{
+  cursor: pointer;
+  background-color: rgb(75, 75, 75);
+}
+#options_left > *.active{
+  background-color: rgb(75, 75, 75);
+  border-left: 32px solid rgb(45, 45, 45);
+}
+
+#options_left > * > *{
+  transition: 0.1s linear;
+}
+#options_left > *:hover > *{
+  filter: brightness(3);
+}
+#options_left > *.active > *{
+  filter: brightness(3);
+}
+
+#options_right{
+  position: relative;
+  display: inline-block;
+  width: calc(var(--engine_height) * 0.7);
+  height: calc(var(--engine_height) * 0.7);
+  margin-top: calc(var(--engine_height) * 0.15);
+  vertical-align: top;
+  margin-left: 64px;
+  background-color: rgb(55, 55, 55);
+}
+
+#options_title{
+  display: block;
+  margin-left: 16px;
+  line-height: calc(var(--engine_height) * 0.05);
+  color: rgb(255, 255, 255);
+  font-family: "gb";
+  font-size: calc(var(--engine_height) * 0.02);
+  user-select: none;
+}
+
+.options_name{
+  width: 40%;
+  margin: 5% 5% 0 5%;
+  line-height: calc(var(--engine_height) * 0.05);
+  color: rgb(150, 150, 150);
+  font-family: "gb";
+  font-size: calc(var(--engine_height) * 0.015);
+  user-select: none;
+}
+
+.options_input_select{
+  height: calc(var(--engine_height) * 0.05);
+  padding: calc(var(--engine_height) * 0.015);
+  border: 1px solid rgb(80, 80, 80);
+  background: rgb(55, 55, 55);
+  color: rgb(255, 255, 255);
+  font-family: "gb";
+  font-size: calc(var(--engine_height) * 0.015);
+}
+
+.options_input_key{
+  height: calc(var(--engine_height) * 0.05);
+  width: 25%;
+  padding: calc(var(--engine_height) * 0.015);
+  text-align: center;
+  border: 1px solid rgb(80, 80, 80);
+  box-sizing: border-box;
+  background: rgb(55, 55, 55);
+  color: rgb(255, 255, 255);
+  font-family: "gb";
+  font-size: calc(var(--engine_height) * 0.015);
+  user-select: none;
+}
+.options_input_key:hover{
+  cursor: text;
+}
+
+.options_input_key_icon{
+  vertical-align: bottom;
+}
+.options_input_key_icon:hover{
+  cursor: pointer;
+  filter: brightness(3);
+  transition: 0.1s linear;
+}
+
+.options_input_range{
+  height: calc(var(--engine_height) * 0.015);
+  width: 40%;
+  vertical-align: middle;
+  background: rgb(40, 40, 40);
+}
+.options_input_range::-webkit-slider-thumb{
+  height: calc(var(--engine_height) * 0.045);
+  width: calc(var(--engine_height) * 0.030);
+  background: rgb(80, 80, 80);
+}
+.options_input_range::-webkit-slider-thumb:hover{
+  cursor: grab;
+}
+
+.options_input_color{
+  height: calc(var(--engine_height) * 0.045);
+  width: 25%;
+  vertical-align: middle;
+}
+.options_input_color:hover{
+  cursor: pointer;
+}

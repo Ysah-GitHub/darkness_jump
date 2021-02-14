@@ -38,11 +38,11 @@ function entity_new(width, height, x, y, speed, color, func, remove){
 }
 
 function entity_new_red_nostalgia(){
-  entity_new(entity.width, entity.height, engine.width, (engine.ground.height - entity.height), (entity.move.base), "rgb(255, 75, 75)", entity_move_left);
+  entity_new(entity.width, entity.height, engine.width, (engine.config.interface.ground_height - entity.height), (entity.move.base), "rgb(255, 75, 75)", entity_move_left);
 }
 
 function entity_new_purple_nostalgia(){
-  entity_new(entity.width, entity.height, engine.width, (engine.ground.height - entity.height * (Math.floor(Math.random() * 3) + 1)), (entity.move.base), "rgb(150, 75, 255)", entity_move_left);
+  entity_new(entity.width, entity.height, engine.width, (engine.config.interface.ground_height - entity.height * (Math.floor(Math.random() * 3) + 1)), (entity.move.base), "rgb(150, 75, 255)", entity_move_left);
 }
 
 function entity_move_left(tmp_entity){

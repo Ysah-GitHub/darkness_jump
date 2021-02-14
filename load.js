@@ -1,5 +1,5 @@
 var app = {
-  version: "a.1.3.0",
+  version: "a.1.3.1",
   device: device(),
   language: language()
 };
@@ -17,7 +17,6 @@ function service_worker(){
 
 function load(){
   engine_load();
-  interface_load();
 }
 
 function load_file(){
@@ -37,6 +36,7 @@ function load_file_list_css(device){
       "css/desktop/animation.css",
       "css/desktop/engine.css",
       "css/desktop/interface.css",
+      "css/desktop/options.css",
       "css/desktop/icon.css"
     ]);
   }

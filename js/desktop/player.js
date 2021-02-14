@@ -26,7 +26,7 @@ function player_load(){
 
 function player_position_default(){
   player.x = (engine.width * 0.1);
-  player.y = (engine.ground.height - player.height);
+  player.y = (engine.config.interface.ground_height - player.height);
 }
 
 function player_size_default(){
@@ -37,7 +37,7 @@ function player_size_default(){
 function player_limit_default(){
   player.x_min = 0;
   player.x_max = (engine.width - player.width);
-  player.y_min = (engine.ground.height - player.height);
+  player.y_min = (engine.config.interface.ground_height - player.height);
   player.y_max = 0;
 }
 
