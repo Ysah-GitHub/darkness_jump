@@ -1,0 +1,135 @@
+#menu{
+  animation-name: animation_menu;
+  animation-duration: 0.3s;
+}
+#menu.main{
+  margin-top: calc(var(--engine_height) * 0.35);
+}
+#menu.selection{
+  height: calc(var(--engine_height) * 0.5);
+  margin-top: calc(var(--engine_height) * 0.25);
+}
+#menu.stage{
+  margin-top: calc(var(--engine_height) * 0.35);
+}
+
+#menu_main_start, #menu_main_options{
+  width: calc(var(--engine_height) * 0.2);
+  margin-right: auto;
+  margin-left: auto;
+  padding: calc(var(--engine_height) * 0.015);
+  text-align: center;
+  transition: 0.1s linear;
+}
+#menu_main_start{
+  font-size: calc(var(--engine_height) * 0.03);
+}
+#menu_main_options{
+  font-size: calc(var(--engine_height) * 0.015);
+}
+#menu_main_start:hover, #menu_main_options:hover{
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  transform: scale(1.2);
+}
+
+#menu_selection_left{
+  display: inline-block;
+  width: calc(var(--engine_height) * 0.25);
+  height: 100%;
+  margin-left: calc(var(--engine_width) * 0.5 - var(--engine_height) * 0.66);
+  border-radius: calc(var(--engine_height) * 0.004);
+}
+
+.menu_selection_left_stage{
+  width: 95%;
+  line-height: calc(var(--engine_height) * 0.03);
+  margin-bottom: calc(var(--engine_height) * 0.004);
+  padding-left: 5%;
+  background-color: rgb(55, 55, 55);
+  border-radius: calc(var(--engine_height) * 0.004);
+  transition: 0.1s linear;
+}
+.menu_selection_left_stage:hover{
+  cursor: pointer;
+  background-color: rgb(65, 65, 65);
+}
+.menu_selection_left_stage.selected{
+  margin-left: calc(var(--engine_height) * 0.03);
+}
+
+#menu_selection_right{
+  position: relative;
+  display: inline-block;
+  width: calc(var(--engine_height) * 0.7);
+  height: 100%;
+  vertical-align: top;
+  margin-left: calc(var(--engine_height) * 0.06);
+  background-color: rgb(55, 55, 55);
+  border-radius: calc(var(--engine_height) * 0.004);
+}
+
+#menu_selection_right_stage{
+  width: 100%;
+  line-height: calc(var(--engine_height) * 0.05);
+  text-align: center;
+  color: rgb(200, 200, 200);
+  font-size: calc(var(--engine_height) * 0.015);
+}
+
+#menu_selection_icon_close{
+  position: absolute;
+  right: 0;
+}
+
+#menu_selection_difficulty{
+  margin-top: calc(var(--engine_height) * 0.05);
+  text-align: center;
+}
+
+#menu_selection_difficulty > *{
+  padding: calc(var(--engine_height) * 0.02);
+  color: rgb(100, 100, 100);
+  transition: 0.1s linear;
+}
+#menu_selection_difficulty > *:hover{
+  cursor: pointer;
+  color: rgb(200, 200, 200);
+  transform: scale(1.1);
+}
+#menu_selection_difficulty > *.selected{
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  transform: scale(1.3);
+}
+
+#menu_selection_start{
+  width: 20%;
+  margin: calc(var(--engine_height) * 0.07) auto 0 auto;
+  padding: 4%;
+  text-align: center;
+  color: rgb(175, 175, 175);
+  font-size: calc(var(--engine_height) * 0.02);
+  transition: 0.1s linear;
+}
+#menu_selection_start:hover{
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  transform: scale(1.2);
+}
+
+#menu_selection_score{
+  margin: calc(var(--engine_height) * 0.1) 0 0 10%;
+  color: rgb(150, 150, 150);
+}
+
+#menu_selection_music{
+  margin: calc(var(--engine_height) * 0.02) 0 0 10%;
+  color: rgb(100, 100, 100);
+  user-select: text;
+}
+
+#menu_selection_music_duration{
+  margin: calc(var(--engine_height) * 0.02) 0 0 10%;
+  color: rgb(100, 100, 100);
+}

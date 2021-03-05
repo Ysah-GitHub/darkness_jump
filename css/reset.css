@@ -11,21 +11,21 @@ option{
   background: inherit;
 }
 
+input{
+  -webkit-appearance: none;
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+}
 
-input[type=range]{
+input[type=number]::-webkit-inner-spin-button{
   -webkit-appearance: none;
 }
+
 input[type=range]:focus{
   outline: none;
 }
 input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none;
-}
-
-input[type=color]{
-  -webkit-appearance: none;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  outline: none;
 }

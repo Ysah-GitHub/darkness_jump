@@ -1,21 +1,6 @@
-var control = {
-  action_keydown: {left: [], right: [], jump: [], start: [], return: []},
-  action_keyup: {left: [], right: [], jump: [], start: [], return: []}
-}
-
-function control_load_default(){
-  let tmp_control_default = engine.config.input;
-  tmp_control_default.left.key = "ArrowLeft";
-  tmp_control_default.left.keyCode = 37;
-  tmp_control_default.right.key = "ArrowRight";
-  tmp_control_default.right.keyCode = 39;
-  tmp_control_default.jump.key = "Space";
-  tmp_control_default.jump.keyCode = 32;
-  tmp_control_default.start.key = "Enter";
-  tmp_control_default.start.keyCode = 13;
-  tmp_control_default.return.key = "Backspace";
-  tmp_control_default.return.keyCode = 8;
-  return tmp_control_default;
+app.control = {
+  action_keydown: {left: [], right: [], jump: [], dash: [], start: [], return: []},
+  action_keyup: {left: [], right: [], jump: [], dash: [], start: [], return: []}
 }
 
 function control_keydown_set(){
@@ -28,20 +13,21 @@ function control_keydown_unset(){
 
 function control_keydown(){
   switch (event.keyCode) {
-    case engine.config.input["left"].keyCode: control_keydown_action("left"); break;
-    case engine.config.input["right"].keyCode: control_keydown_action("right"); break;
-    case engine.config.input["jump"].keyCode: control_keydown_action("jump"); break;
-    case engine.config.input["start"].keyCode: control_keydown_action("start"); break;
-    case engine.config.input["return"].keyCode: control_keydown_action("return"); break;
+    case app.config.input["left"].keyCode: control_keydown_action("left"); break;
+    case app.config.input["right"].keyCode: control_keydown_action("right"); break;
+    case app.config.input["jump"].keyCode: control_keydown_action("jump"); break;
+    case app.config.input["dash"].keyCode: control_keydown_action("dash"); break;
+    case app.config.input["start"].keyCode: control_keydown_action("start"); break;
+    case app.config.input["return"].keyCode: control_keydown_action("return"); break;
   }
 }
 
 function control_keydown_action(key){
   let tmp_action = [];
-  for (let i = 0; i < control.action_keydown[key].length; i++) {
-    control.action_keydown[key][i][1](...control.action_keydown[key][i][2]);
-    if (control.action_keydown[key][i][3]) {
-      tmp_action.push(control.action_keydown[key][i]);
+  for (let i = 0; i < app.control.action_keydown[key].length; i++) {
+    app.control.action_keydown[key][i][1](...app.control.action_keydown[key][i][2]);
+    if (app.control.action_keydown[key][i][3]) {
+      tmp_action.push(app.control.action_keydown[key][i]);
     }
   }
   for (let i = 0; i < tmp_action.length; i++) {
@@ -50,26 +36,27 @@ function control_keydown_action(key){
 }
 
 function control_keydown_action_add(key, name, action, arguments, remove){
-  control.action_keydown[key].push([name, action, arguments, remove]);
+  app.control.action_keydown[key].push([name, action, arguments, remove]);
 }
 
 function control_keydown_action_remove(key, name){
-  for (let i = 0; i < control.action_keydown[key].length; i++) {
-    if (control.action_keydown[key][i][0] == name) {
-      control.action_keydown[key].splice(i, 1);
+  for (let i = 0; i < app.control.action_keydown[key].length; i++) {
+    if (app.control.action_keydown[key][i][0] == name) {
+      app.control.action_keydown[key].splice(i, 1);
       break;
     }
   }
 }
 
 function control_keydown_action_reset(key){
-  control.action_keydown[key] = [];
+  app.control.action_keydown[key] = [];
 }
 
 function control_keydown_action_reset_all(){
   control_keydown_action_reset("left");
   control_keydown_action_reset("right");
   control_keydown_action_reset("jump");
+  control_keydown_action_reset("dash");
   control_keydown_action_reset("start");
   control_keydown_action_reset("return");
 }
@@ -84,20 +71,21 @@ function control_keyup_unset(){
 
 function control_keyup(){
   switch (event.keyCode) {
-    case engine.config.input["left"].keyCode: control_keyup_action("left"); break;
-    case engine.config.input["right"].keyCode: control_keyup_action("right"); break;
-    case engine.config.input["jump"].keyCode: control_keyup_action("jump"); break;
-    case engine.config.input["start"].keyCode: control_keyup_action("start"); break;
-    case engine.config.input["return"].keyCode: control_keyup_action("return"); break;
+    case app.config.input["left"].keyCode: control_keyup_action("left"); break;
+    case app.config.input["right"].keyCode: control_keyup_action("right"); break;
+    case app.config.input["jump"].keyCode: control_keyup_action("jump"); break;
+    case app.config.input["dash"].keyCode: control_keyup_action("dash"); break;
+    case app.config.input["start"].keyCode: control_keyup_action("start"); break;
+    case app.config.input["return"].keyCode: control_keyup_action("return"); break;
   }
 }
 
 function control_keyup_action(key){
   let tmp_action = [];
-  for (let i = 0; i < control.action_keyup[key].length; i++) {
-    control.action_keyup[key][i][1](...control.action_keyup[key][i][2]);
-    if (control.action_keyup[key][i][3]) {
-      tmp_action.push(control.action_keyup[key][i]);
+  for (let i = 0; i < app.control.action_keyup[key].length; i++) {
+    app.control.action_keyup[key][i][1](...app.control.action_keyup[key][i][2]);
+    if (app.control.action_keyup[key][i][3]) {
+      tmp_action.push(app.control.action_keyup[key][i]);
     }
   }
   for (let i = 0; i < tmp_action.length; i++) {
@@ -106,26 +94,27 @@ function control_keyup_action(key){
 }
 
 function control_keyup_action_add(key, name, action, arguments, remove){
-  control.action_keyup[key].push([name, action, arguments, remove]);
+  app.control.action_keyup[key].push([name, action, arguments, remove]);
 }
 
 function control_keyup_action_remove(key, name){
-  for (let i = 0; i < control.action_keyup[key].length; i++) {
-    if (control.action_keyup[key][i][0] == name) {
-      control.action_keyup[key].splice(i, 1);
+  for (let i = 0; i < app.control.action_keyup[key].length; i++) {
+    if (app.control.action_keyup[key][i][0] == name) {
+      app.control.action_keyup[key].splice(i, 1);
       break;
     }
   }
 }
 
 function control_keyup_action_reset(key){
-  control.action_keyup[key] = [];
+  app.control.action_keyup[key] = [];
 }
 
 function control_keyup_action_reset_all(){
   control_keyup_action_reset("left");
   control_keyup_action_reset("right");
   control_keyup_action_reset("jump");
+  control_keyup_action_reset("dash");
   control_keyup_action_reset("start");
   control_keyup_action_reset("return");
 }

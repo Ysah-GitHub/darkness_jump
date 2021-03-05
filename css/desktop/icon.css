@@ -1,16 +1,19 @@
-#icon_close_options{
-  position: absolute;
-  right: 0;
+.icon{
+  font-size: 0;
   transition: 0.1s linear;
 }
-#icon_close_options:hover{
+.icon:hover{
   cursor: pointer;
+}
+
+.icon > canvas{
+  transition: 0.1s linear;
+}
+
+.icon.close:hover{
   background-color: rgba(255, 75, 75, 0.6);
 }
 
-#icon_close_options > canvas{
-  transition: 0.1s linear;
-}
-#icon_close_options:hover > canvas{
+.icon.close:hover > canvas{
   filter: brightness(3);
 }

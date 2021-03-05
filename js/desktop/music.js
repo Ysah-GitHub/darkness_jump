@@ -1,4 +1,4 @@
-var music = {
+app.music = {
   current: null,
   list: {
     bonetrousle: {
@@ -6,34 +6,34 @@ var music = {
       name: "Bonetrousle",
       src: "rsc/music/bonetrousle.mp3",
       size: 2.21,
-      duration: 0.57
+      duration: {minute: 0, second: 57}
     },
     spider_dance: {
       author: "Toby Fox - Undertal",
       name: "Spider Dance",
       src: "rsc/music/spider_dance.mp3",
       size: 4.07,
-      duration: 1.46
+      duration: {minute: 1, second: 46}
     }
   }
 };
 
 function music_play(name){
   let tmp_music = document.createElement("audio");
-  tmp_music.src = music.list[name].src;
-  tmp_music.volume = engine.config.audio.volume;
+  tmp_music.src = app.music.list[name].src;
+  tmp_music.volume = app.config.audio.volume;
 
-  music.curent = tmp_music;
-  music.curent.play();
+  app.music.curent = tmp_music;
+  app.music.curent.play();
 }
 
 function music_stop(){
-  music.curent.pause();
+  app.music.curent.pause();
 }
 
 function music_volume_update(volume){
-  engine.config.audio.volume = volume;
-  if (music.curent != null) {
-    music.curent.volume = engine.config.audio.volume;
+  app.config.audio.volume = volume;
+  if (app.music.curent != null) {
+    app.music.curent.volume = app.config.audio.volume;
   }
 }

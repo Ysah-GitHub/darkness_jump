@@ -1,0 +1,54 @@
+.menu_stage{
+  width: calc(var(--engine_height) * 0.2);
+  padding: calc(var(--engine_height) * 0.015);
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+  font-family: "gb";
+  color: rgb(125, 125, 125);
+  font-size: calc(var(--engine_height) * 0.02);
+  user-select: none;
+  transition: 0.1s linear;
+}
+.menu_stage:hover{
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  transform: scale(1.2);
+}
+
+#menu_stage_return{
+  width: calc(var(--engine_height) * 0.2);
+  margin: calc(var(--engine_height) * 0.03) auto 0 auto;
+  padding: calc(var(--engine_height) * 0.015);
+  text-align: center;
+  font-family: "gb";
+  color: rgb(125, 125, 125);
+  font-size: calc(var(--engine_height) * 0.015);
+  user-select: none;
+  transition: 0.1s linear;
+}
+#menu_stage_return:hover{
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  transform: scale(1.2);
+}
+
+#stage_timer{
+  position: absolute;
+  right: 0;
+  margin: calc(var(--engine_height) * 0.08) calc(var(--engine_height) * 0.1) 0 0;
+  font-family: "gb";
+  color: rgb(125, 125, 125);
+  font-size: calc(var(--engine_height) * 0.015);
+  user-select: none;
+}
+
+#score{
+  position: absolute;
+  right: 0;
+  margin: calc(var(--engine_height) * 0.12) calc(var(--engine_height) * 0.1) 0 0;
+  font-family: "gb";
+  color: rgb(125, 125, 125);
+  font-size: calc(var(--engine_height) * 0.015);
+  user-select: none;
+}

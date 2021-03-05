@@ -1,89 +1,36 @@
-var engine = {
+app.engine = {
   width: null,
   height: null,
+  ground_height: null,
   element: [],
   refresh: null,
-  stage: {
-    current: null,
-    nostalgia: {
-      score: 0,
-      lastscore: 0,
-      hightscore: 0
-    }
-  },
-  config: {
-    video: {
-      resolution: {id: null, value: null},
-      framerate: {id: null, value: null}
-    },
-    interface: {
-      ground_height: null,
-      ground_color: null
-    },
-    input: {
-      left: {key: null, keyCode: null},
-      right: {key: null, keyCode: null},
-      jump: {key: null, keyCode: null},
-      start: {key: null, keyCode: null},
-      return: {key: null, keyCode: null}
-    },
-    audio: {
-      volume: null
-    }
-  }
 };
 
-function engine_config_save(){
-  localStorage.setItem("engine_config", JSON.stringify(engine.config));
-}
-
-function engine_config_load(){
-  if (localStorage.getItem("engine_config")) {
-    engine.config = JSON.parse(localStorage.getItem("engine_config"));
-  }
-  else {
-    engine_config_load_default();
-    engine_config_save();
-  }
-}
-
-function engine_config_load_default(){
-  engine.config.video.resolution.id = 0;
-  engine.config.video.resolution.value = screen.width + "x" + screen.height;
-  engine.config.video.framerate.id = 0;
-  engine.config.video.framerate.value = "Auto";
-
-  engine.config.interface.ground_color = "#555555";
-
-  engine.config.input = control_load_default();
-
-  engine.config.audio.volume = 0.35;
-}
-
 function engine_resolution(resolution){
-  engine.width = Number(resolution.split("x")[0]);
-  engine.height = Number(resolution.split("x")[1]);
-  engine.config.interface.ground_height = engine.height / 2;
+  app.engine.width = Number(resolution.split("x")[0]);
+  app.engine.height = Number(resolution.split("x")[1]);
+  app.engine.ground_height = app.engine.height * 0.7;
 }
 
 function engine_resolution_update(){
-  document.documentElement.style.setProperty("--engine_width", engine.width + "px");
-  document.documentElement.style.setProperty("--engine_height", engine.height + "px");
-  document.getElementById("engine").width = engine.width;
-  document.getElementById("engine").height = engine.height;
+  document.documentElement.style.setProperty("--engine_width", app.engine.width + "px");
+  document.documentElement.style.setProperty("--engine_height", app.engine.height + "px");
+  document.getElementById("engine").width = app.engine.width;
+  document.getElementById("engine").height = app.engine.height;
 
-  player_size_default()
-  player_limit_default();
+  player_size_default();
   player_position_default();
-  player_move_value_default();
-  player_jump_value_default();
-  entity_size_default();
-  entity_move_value_default();
+  player_position_limit_default();
+  player_speed_default();
+
+  entity_load();
 }
 
 function engine_resolution_list(){
-  let tmp_resolution_list_available = [screen.width + "x" + screen.height];
+  let tmp_resolution_list_available = [];
   let tmp_resolution_list = [
+    "640x480",
+    "720x480",
     "1024x768",
     "1366x768",
     "1920x1080",
@@ -97,23 +44,20 @@ function engine_resolution_list(){
   ];
 
   for (let i = 0; i < tmp_resolution_list.length; i++) {
-    if (
-      screen.width >= Number(tmp_resolution_list[i].split("x")[0]) &&
-      screen.height >= Number(tmp_resolution_list[i].split("x")[1])
-    ) {
+    if (screen.width >= tmp_resolution_list[i].split("x")[0] && screen.height >= tmp_resolution_list[i].split("x")[1]) {
       tmp_resolution_list_available.push(tmp_resolution_list[i]);
     }
+  }
+
+  if (tmp_resolution_list_available[tmp_resolution_list_available.length - 1] != (screen.width + "x" + screen.height)) {
+    tmp_resolution_list_available.push(screen.width + "x" + screen.height);
   }
 
   return tmp_resolution_list_available;
 }
 
 function engine_load(){
-  engine_config_load();
-  stage_load();
-
-  engine_create();
-  engine_resolution(engine.config.video.resolution.value);
+  engine_resolution(app.config.video.resolution);
   engine_resolution_update();
 
   player_load();
@@ -126,107 +70,94 @@ function engine_load(){
 
   control_keydown_set();
   control_keyup_set();
-
-  interface_create();
-  interface_menu_create();
 }
 
 function engine_refresh(){
   let ctx = document.getElementById("engine").getContext("2d");
-  ctx.clearRect(0, 0, engine.width, engine.height);
-  for (let i = 0; i < engine.element.length; i++) {
-    engine.element[i][1](ctx);
+  ctx.clearRect(0, 0, app.engine.width, app.engine.height);
+  for (let i = 0; i < app.engine.element.length; i++) {
+    ctx.save();
+    app.engine.element[i][1](ctx);
+    ctx.restore();
   }
 }
 
 function engine_refresh_start(){
-  if (engine.config.video.framerate.id == 0) {
-    engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
+  if (app.config.video.framerate == "Auto") {
+    app.engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
   }
   else {
-    engine.refresh = setInterval(engine_refresh, 1000 / engine.config.video.framerate.value);
+    app.engine.refresh = setInterval(engine_refresh, 1000 / app.config.video.framerate);
   }
 }
 
 function engine_refresh_stop(){
-  if (engine.config.video.framerate.id == 0) {
-    window.cancelAnimationFrame(engine.refresh);
+  if (app.config.video.framerate == "Auto") {
+    window.cancelAnimationFrame(app.engine.refresh);
   }
   else {
-    clearInterval(engine.refresh);
+    clearInterval(app.engine.refresh);
   }
 }
 
 function engine_refresh_auto(){
   engine_refresh();
-  engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
+  app.engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
 }
 
 function engine_element_add(name, func, arguments){
-  engine.element.push([name, func, arguments]);
+  app.engine.element.push([name, func, arguments]);
 }
 
 function engine_element_remove(name){
-  for (let i = 0; i < engine.element.length; i++) {
-    if (engine.element[i][0] == name) {
-      engine.element.splice(i, 1);
+  for (let i = 0; i < app.engine.element.length; i++) {
+    if (app.engine.element[i][0] == name) {
+      app.engine.element.splice(i, 1);
       break;
     }
   }
 }
 
-function engine_create(){
-  let tmp_engine = document.createElement("canvas");
-  tmp_engine.id = "engine";
-  document.body.prepend(tmp_engine);
-}
-
-function engine_reset(){
-  player_move_clear();
-  player_jump_clear();
-  player_control_remove();
-  player_move_value_reset();
-  player_jump_value_reset();
-
-  player_position_default();
-  player_move_value_default();
-  player_jump_value_default();
-  player_control_default();
-
-  engine_element_remove("engine_draw_player");
-  engine_element_remove("engine_draw_entity");
-
-  engine_element_add("engine_draw_player", engine_draw_player);
-
-  entity_reload();
-  entity_move_value_default();
-  stage_score_reset();
-}
-
 function engine_draw_player(ctx){
-  ctx.fillStyle = player.color;
-  ctx.fillRect(player.x, player.y, player.width, player.height);
+  ctx.fillStyle = app.player.color;
+  ctx.shadowColor = app.player.color;
+  ctx.shadowBlur = app.player.blur;
+  ctx.fillRect(app.player.x, app.player.y, app.player.width, app.player.height);
 }
 
 function engine_draw_player_explosion(ctx){
-  ctx.fillStyle = player.color;
-  for (let i = 0; i < player.explosion.list.length; i++) {
-    ctx.fillRect(player.explosion.list[i].x, player.explosion.list[i].y, player.explosion.width, player.explosion.height);
+  ctx.fillStyle = app.player.color;
+  ctx.shadowColor = app.player.color;
+  ctx.shadowBlur = app.player.explosion.blur;
+  for (let i = 0; i < app.player.explosion.list.length; i++) {
+    ctx.fillRect(app.player.explosion.list[i].x, app.player.explosion.list[i].y, app.player.explosion.width, app.player.explosion.height);
   }
 }
 
 function engine_draw_entity(ctx){
-  for (let i = 0; i < Object.keys(entity.list).length; i++) {
-    let tmp_entity = entity.list[Object.keys(entity.list)[i]]
-    ctx.fillStyle = tmp_entity.color;
-    ctx.fillRect(tmp_entity.x, tmp_entity.y, tmp_entity.width, tmp_entity.height);
+  for (let i = 0; i < app.entity.list.length; i++) {
+    ctx.fillStyle = app.entity.list[i].color;
+    ctx.shadowColor = app.entity.list[i].color;
+    ctx.shadowBlur = app.player.blur;
+    ctx.fillRect(app.entity.list[i].x, app.entity.list[i].y, app.entity.list[i].width, app.entity.list[i].height);
+  }
+}
+
+function engine_draw_entity_explosion(ctx){
+  for (let i = 0; i < app.entity.explosion.list.length; i++) {
+    ctx.fillStyle = app.entity.explosion.list[i].color;
+    ctx.shadowColor = app.entity.explosion.list[i].color;
+    ctx.shadowBlur = app.entity.explosion.list[i].blur;
+    for (let j = 0; j < app.entity.explosion.list[i].list.length; j++) {
+      ctx.fillRect(app.entity.explosion.list[i].list[j].x, app.entity.explosion.list[i].list[j].y, app.entity.explosion.list[i].list[j].width, app.entity.explosion.list[i].list[j].height);
+    }
   }
 }
 
 function engine_draw_ground(ctx){
-  ctx.strokeStyle = engine.config.interface.ground_color;
+  ctx.strokeStyle = app.config.interface.ground_color;
   ctx.beginPath();
-  ctx.moveTo(0, engine.config.interface.ground_height);
-  ctx.lineTo(engine.width, engine.config.interface.ground_height);
+  ctx.moveTo(0, app.engine.ground_height);
+  ctx.lineTo(app.engine.width, app.engine.ground_height);
   ctx.stroke();
 }

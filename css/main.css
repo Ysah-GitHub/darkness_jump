@@ -9,11 +9,20 @@ span{
   display: inline-block;
 }
 
-.canvas{
-  font-size: 0;
-}
-
 @font-face {
   font-family: "gb";
   src: url("../rsc/font/gb.ttf");
+}
+
+#interface{
+  position: absolute;
+  width: var(--engine_width);
+  height: var(--engine_height);
+}
+
+.text{
+  font-family: "gb";
+  color: rgb(150, 150, 150);
+  font-size: calc(var(--engine_height) * 0.01);
+  user-select: none;
 }
