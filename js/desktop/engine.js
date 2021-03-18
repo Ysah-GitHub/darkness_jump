@@ -3,7 +3,7 @@ app.engine = {
   height: null,
   ground_height: null,
   element: [],
-  refresh: null,
+  refresh: {frame: null, last_frame: null, interval: null, func: []}
 };
 
 function engine_resolution(resolution){
@@ -18,11 +18,7 @@ function engine_resolution_update(){
   document.getElementById("engine").width = app.engine.width;
   document.getElementById("engine").height = app.engine.height;
 
-  player_size_default();
-  player_position_default();
-  player_position_limit_default();
-  player_speed_default();
-
+  player_reset();
   entity_load();
 }
 
@@ -58,7 +54,10 @@ function engine_resolution_list(){
 
 function engine_load(){
   engine_resolution(app.config.video.resolution);
-  engine_resolution_update();
+  document.documentElement.style.setProperty("--engine_width", app.engine.width + "px");
+  document.documentElement.style.setProperty("--engine_height", app.engine.height + "px");
+  document.getElementById("engine").width = app.engine.width;
+  document.getElementById("engine").height = app.engine.height;
 
   player_load();
   entity_load();
@@ -72,7 +71,14 @@ function engine_load(){
   control_keyup_set();
 }
 
-function engine_refresh(){
+function engine_refresh(tmp_frame){
+  app.engine.refresh.frame = tmp_frame - app.engine.refresh.last_frame;
+  app.engine.refresh.last_frame = tmp_frame;
+
+  for (let i = 0; i < app.engine.refresh.func.length; i++) {
+    app.engine.refresh.func[i]();
+  }
+
   let ctx = document.getElementById("engine").getContext("2d");
   ctx.clearRect(0, 0, app.engine.width, app.engine.height);
   for (let i = 0; i < app.engine.element.length; i++) {
@@ -80,29 +86,25 @@ function engine_refresh(){
     app.engine.element[i][1](ctx);
     ctx.restore();
   }
+  app.engine.refresh.interval = window.requestAnimationFrame(engine_refresh);
+}
+
+function engine_refresh_add(func){
+  app.engine.refresh.func.push(func);
+}
+
+function engine_refresh_remove(func){
+  if (app.engine.refresh.func.indexOf(func) >= 0) {
+    app.engine.refresh.func.splice(app.engine.refresh.func.indexOf(func), 1);
+  }
 }
 
 function engine_refresh_start(){
-  if (app.config.video.framerate == "Auto") {
-    app.engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
-  }
-  else {
-    app.engine.refresh = setInterval(engine_refresh, 1000 / app.config.video.framerate);
-  }
+  app.engine.refresh.interval = window.requestAnimationFrame(engine_refresh);
 }
 
 function engine_refresh_stop(){
-  if (app.config.video.framerate == "Auto") {
-    window.cancelAnimationFrame(app.engine.refresh);
-  }
-  else {
-    clearInterval(app.engine.refresh);
-  }
-}
-
-function engine_refresh_auto(){
-  engine_refresh();
-  app.engine.refresh = window.requestAnimationFrame(engine_refresh_auto);
+  window.cancelAnimationFrame(app.engine.refresh.interval);
 }
 
 function engine_element_add(name, func, arguments){
@@ -145,11 +147,11 @@ function engine_draw_entity(ctx){
 
 function engine_draw_entity_explosion(ctx){
   for (let i = 0; i < app.entity.explosion.list.length; i++) {
-    ctx.fillStyle = app.entity.explosion.list[i].color;
-    ctx.shadowColor = app.entity.explosion.list[i].color;
-    ctx.shadowBlur = app.entity.explosion.list[i].blur;
-    for (let j = 0; j < app.entity.explosion.list[i].list.length; j++) {
-      ctx.fillRect(app.entity.explosion.list[i].list[j].x, app.entity.explosion.list[i].list[j].y, app.entity.explosion.list[i].list[j].width, app.entity.explosion.list[i].list[j].height);
+    for (let j = 0; j < app.entity.explosion.list[i].length; j++) {
+      ctx.fillStyle = app.entity.explosion.list[i][j].color;
+      ctx.shadowColor = app.entity.explosion.list[i][j].color;
+      ctx.shadowBlur = app.entity.explosion.list[i][j].blur;
+      ctx.fillRect(app.entity.explosion.list[i][j].x, app.entity.explosion.list[i][j].y, app.entity.explosion.list[i][j].width, app.entity.explosion.list[i][j].height);
     }
   }
 }

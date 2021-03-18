@@ -1,10 +1,11 @@
 function score_save(){
-  localStorage.setItem("score", JSON.stringify(app.score));
+  localStorage.setItem("score_" + app.version, JSON.stringify(app.score));
 }
 
 function score_load(){
-  if (localStorage.getItem("score")) {
-    app.score = JSON.parse(localStorage.getItem("score"));
+  if (localStorage.getItem("score_" + app.version)) {
+    // temp add name of version for developpement
+    app.score = JSON.parse(localStorage.getItem("score_" + app.version));
   }
   else {
     app.score = score_default();
@@ -48,6 +49,7 @@ function score_interface(){
   if (app.config.interface.score == "visible" && !document.getElementById("score")) {
     let tmp_score = document.createElement("span");
     tmp_score.id = "score";
+    tmp_score.className = "text";
     document.getElementById("interface").prepend(tmp_score);
   }
 }

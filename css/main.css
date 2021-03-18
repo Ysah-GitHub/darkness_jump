@@ -22,7 +22,14 @@ span{
 
 .text{
   font-family: "gb";
-  color: rgb(150, 150, 150);
+  color: rgb(175, 175, 175);
   font-size: calc(var(--engine_height) * 0.01);
   user-select: none;
+}
+.text.shadow{
+  text-shadow:
+    calc(var(--engine_height) * -0.001) 0 rgb(10, 10, 10),
+    0 calc(var(--engine_height) * 0.001) rgb(10, 10, 10),
+    calc(var(--engine_height) * 0.001) 0 rgb(10, 10, 10),
+    0 calc(var(--engine_height) * -0.001) rgb(10, 10, 10);
 }

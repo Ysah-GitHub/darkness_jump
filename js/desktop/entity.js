@@ -7,7 +7,7 @@ app.entity = {
   y_max: null,
   move: {base: null, interval: null},
   spawn: {rate: 1, timeout: null},
-  explosion: {list: [], interval: null},
+  explosion: {list: [], active: false, speed: null, melt_speed: null},
   remove: [],
   list: []
 };
@@ -16,6 +16,7 @@ function entity_load(){
   entity_size_value_default();
   entity_move_value_default();
   entity_limit_default();
+  app.entity.explosion = {list: [], active: false, speed: entity_speed(0.5), melt_speed: entity_speed(0.1)};
 }
 
 function entity_reset(){
@@ -40,7 +41,7 @@ function entity_limit_default(){
 }
 
 function entity_speed(speed){
-  return (app.entity.move.base * (1000 / app.config.video.interval)) * speed;
+  return ((app.entity.width + app.entity.height) / 60) * speed;
 }
 
 function entity_spawn_update(decrement, value_max){
@@ -66,31 +67,31 @@ function entity_move(){
 }
 
 function entity_move_left(entity){
-  entity.x -= entity.speed;
+  entity.x -= entity.speed * app.engine.refresh.frame;
   if (entity.x < app.entity.x_min) {
     app.entity.remove.push(entity);
-    if (app.config.video.explosion == "visible") {
-      entity_explosion(entity, "left");
-    }
+    entity_explosion(entity, "left");
   }
 }
 
 function entity_move_right(entity){
-  entity.x += entity.speed;
+  entity.x += entity.speed * app.engine.refresh.frame;
   if (entity.x > app.entity.x_max) {
-    entity_remove(entity);
+    app.entity.remove.push(entity);
+    entity_explosion(entity, "right");
   }
 }
 
 function entity_move_down(entity){
-  entity.y += entity.speed;
-  if (entity.y > app.entity.y_min) {
-    entity_remove(entity);
+  entity.y += entity.speed * app.engine.refresh.frame;
+  if (entity.y > app.entity.y_max) {
+    app.entity.remove.push(entity);
+    entity_explosion(entity, "center");
   }
 }
 
 function entity_move_stop(){
-  clearInterval(app.entity.move.interval);
+  engine_refresh_remove(entity_move);
 }
 
 function entity_new(entity){
@@ -115,57 +116,75 @@ function entity_hitbox(entity){
     (entity.y - app.player.height) < app.player.y &&
     (entity.y + entity.height) > app.player.y
   ) {
-    stage_over();
+    stage_end(false);
   }
 }
 
 function entity_explosion(entity, direction){
-  let tmp_number = 25 * ((entity.width / app.entity.width) * (entity.height / app.entity.height));
+  let tmp_number = 20 * ((entity.width / app.entity.width) * (entity.height / app.entity.height));
   let tmp_size = (app.entity.width + app.entity.height) / 8;
   let tmp_x = entity.x + entity.width / 2;
   let tmp_y = (entity.y + entity.height / 2) - tmp_size / 2;
+  let tmp_y_max = app.entity.y_max + app.entity.height - app.entity.height / 4;
+  let tmp_blur = tmp_size * 0.5;
 
 
-  let tmp_entity = {
-    color: entity.color,
-    blur: tmp_size * 0.5,
-    y_max: app.entity.y_max + app.entity.height - app.entity.height / 4,
-    list: [],
-  };
+  let tmp_entity = [];
 
   if (direction == "left") {
     for (let i = 0; i < tmp_number; i++) {
-      tmp_entity.list.push({
+      tmp_entity.push({
         width: tmp_size,
         height: tmp_size,
         x: 0,
         y: tmp_y,
-        y_max: tmp_entity.y_max,
-        velocity: (Math.floor(Math.random() * 100) / 50) * 2,
-        vertical: entity.speed / 2,
-        horizontal: (Math.floor(Math.random() * 100) / 15) * (entity.speed / 8)
+        y_max: tmp_y_max,
+        velocity: (Math.floor(Math.random() * 100) / 50) * entity.speed,
+        vertical: app.entity.explosion.speed,
+        horizontal: (Math.floor(Math.random() * 100) / 15) * (entity.speed / 8),
+        color: entity.color.replace(")", ", " + Math.random().toFixed(1) + ")"),
+        blur: tmp_blur
+      });
+    }
+  }
+  else if (direction == "right") {
+    for (let i = 0; i < tmp_number; i++) {
+      tmp_entity.push({
+        width: tmp_size,
+        height: tmp_size,
+        x: app.engine.width,
+        y: tmp_y,
+        y_max: tmp_y_max,
+        velocity: (Math.floor(Math.random() * 100) / 50) * entity.speed,
+        vertical: app.entity.explosion.speed,
+        horizontal: -Math.abs(Math.floor(Math.random() * 100) / 15) * (entity.speed / 8),
+        color: entity.color.replace(")", ", " + Math.random().toFixed(1) + ")"),
+        blur: tmp_blur
       });
     }
   }
   else if (direction == "center") {
     for (let i = 0; i < tmp_number; i++) {
-      tmp_entity.list.push({
+      tmp_entity.push({
         width: tmp_size,
         height: tmp_size,
         x: tmp_x,
         y: tmp_y,
-        y_max: tmp_entity.y_max,
-        velocity: (Math.floor(Math.random() * 100) / 50) * 2,
-        vertical: entity.speed / 2,
-        horizontal: ((Math.floor(Math.random() * 100) / 50) - (Math.floor(Math.random() * 100) / 50)) * (entity.speed / 8)
+        y_max: tmp_y_max,
+        velocity: (Math.floor(Math.random() * 100) / 50) * entity.speed,
+        vertical: app.entity.explosion.speed,
+        horizontal: ((Math.floor(Math.random() * 100) / 50) - (Math.floor(Math.random() * 100) / 50)) * (entity.speed / 8),
+        color: entity.color.replace(")", ", " + Math.random().toFixed(1) + ")"),
+        blur: tmp_blur
       });
     }
   }
 
   app.entity.explosion.list.push(tmp_entity);
 
-  if (app.entity.explosion.interval == null) {
-    app.entity.explosion.interval = setInterval(entity_explosion_move, 1000 / app.config.video.interval, (1000 / app.config.video.interval) / 160);
+  if (app.entity.explosion.active == false) {
+    app.entity.explosion.active = true;
+    engine_refresh_add(entity_explosion_move);
     engine_element_add("engine_draw_entity_explosion", engine_draw_entity_explosion);
   }
 }
@@ -176,33 +195,34 @@ function entity_explosion_all(){
   }
 }
 
-function entity_explosion_move(velocity_decrement){
+function entity_explosion_move(){
+  let tmp_frame = app.engine.refresh.frame;
   for (let i = 0; i < app.entity.explosion.list.length; i++) {
     let tmp_length = 0;
-    for (let j = 0; j < app.entity.explosion.list[i].list.length; j++) {
-      app.entity.explosion.list[i].list[j].velocity -= velocity_decrement;
-      if (app.entity.explosion.list[i].list[j].y < app.entity.explosion.list[i].y_max) {
-        app.entity.explosion.list[i].list[j].y -= app.entity.explosion.list[i].list[j].vertical * app.entity.explosion.list[i].list[j].velocity - app.player.speed.gravity;
-        if (app.entity.explosion.list[i].list[j].velocity > 1) {
-          app.entity.explosion.list[i].list[j].x += app.entity.explosion.list[i].list[j].horizontal * app.entity.explosion.list[i].list[j].velocity;
+    for (let j = 0; j < app.entity.explosion.list[i].length; j++) {
+      app.entity.explosion.list[i][j].velocity -= (app.entity.explosion.list[i][j].vertical / 75) * tmp_frame;
+      if (app.entity.explosion.list[i][j].y < app.entity.explosion.list[i][j].y_max) {
+        app.entity.explosion.list[i][j].y -= (app.entity.explosion.list[i][j].vertical + app.entity.explosion.list[i][j].velocity) * tmp_frame - (app.entity.explosion.speed * tmp_frame);
+        if (app.entity.explosion.list[i][j].velocity > 1) {
+          app.entity.explosion.list[i][j].x += (app.entity.explosion.list[i][j].horizontal * app.entity.explosion.list[i][j].velocity) * tmp_frame;
         }
         else {
-          app.entity.explosion.list[i].list[j].x += app.entity.explosion.list[i].list[j].horizontal;
+          app.entity.explosion.list[i][j].x += app.entity.explosion.list[i][j].horizontal * tmp_frame;
         }
       }
       else {
-        if (app.entity.explosion.list[i].list[j].height > 0) {
-          app.entity.explosion.list[i].list[j].height -= app.player.speed.move / 40;
-          app.entity.explosion.list[i].list[j].y_max += app.player.speed.move / 40;
-          app.entity.explosion.list[i].list[j].y = app.entity.explosion.list[i].list[j].y_max;
+        if (app.entity.explosion.list[i][j].height > 0) {
+          app.entity.explosion.list[i][j].height -= app.entity.explosion.melt_speed;
+          app.entity.explosion.list[i][j].y_max += app.entity.explosion.melt_speed;
+          app.entity.explosion.list[i][j].y = app.entity.explosion.list[i][j].y_max;
         }
         else {
           tmp_length++;
-          app.entity.explosion.list[i].list[j].height = 0;
+          app.entity.explosion.list[i][j].height = 0;
         }
       }
     }
-    if (tmp_length == app.entity.explosion.list[i].list.length) {
+    if (tmp_length == app.entity.explosion.list[i].length) {
       app.entity.explosion.list.splice([i], 1);
       if (app.entity.explosion.list.length == 0) {
         entity_explosion_stop();
@@ -213,6 +233,6 @@ function entity_explosion_move(velocity_decrement){
 
 function entity_explosion_stop(){
   engine_element_remove("engine_draw_entity_explosion");
-  clearInterval(app.entity.explosion.interval);
-  app.entity.explosion.interval = null;
+  engine_refresh_remove(entity_explosion_move);
+  app.entity.explosion.active = false;
 }

@@ -2,18 +2,20 @@ app.music = {
   current: null,
   list: {
     bonetrousle: {
-      author: "Toby Fox - Undertal",
+      author: "Toby Fox - Undertale",
       name: "Bonetrousle",
       src: "rsc/music/bonetrousle.mp3",
-      size: 2.21,
-      duration: {minute: 0, second: 57}
+      size: 1.55,
+      duration: {minute: 0, second: 58},
+      link: "https://youtu.be/zdeZwAk6ULE"
     },
     spider_dance: {
-      author: "Toby Fox - Undertal",
+      author: "Toby Fox - Undertale",
       name: "Spider Dance",
       src: "rsc/music/spider_dance.mp3",
-      size: 4.07,
-      duration: {minute: 1, second: 46}
+      size: 2.62,
+      duration: {minute: 1, second: 44},
+      link: "https://youtu.be/YZ3XjVVNagU"
     }
   }
 };

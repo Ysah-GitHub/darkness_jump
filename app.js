@@ -1,15 +1,16 @@
 var app = {
-  version: "a.1.4.0",
+  version: "a.1.5.0",
   device: app_device()
 };
 
 function app_config_save(){
-  localStorage.setItem("config", JSON.stringify(app.config));
+  localStorage.setItem("config_" + app.version, JSON.stringify(app.config));
 }
 
 function app_config_load(){
-  if (localStorage.getItem("config")) {
-    app.config = JSON.parse(localStorage.getItem("config"));
+  if (localStorage.getItem("config_" + app.version)) {
+    // temp add name of version for developpement
+    app.config = JSON.parse(localStorage.getItem("config_" + app.version));
   }
   else {
     app.config = app_config_default();
@@ -20,10 +21,7 @@ function app_config_load(){
 function app_config_default(){
   return tmp_config = {
     video: {
-      resolution: screen.width + "x" + screen.height,
-      framerate: "Auto",
-      interval: 250,
-      explosion: "visible"
+      resolution: screen.width + "x" + screen.height
     },
     interface: {
       language: app_language_default(),
@@ -96,6 +94,7 @@ function app_file_list_js(){
   let tmp_file_list = {
     main: [],
     desktop: [
+      "js/desktop/translation/" + app.config.interface.language + "/translation.js",
       "js/desktop/menu.js",
       "js/desktop/options.js",
       "js/desktop/control.js",

@@ -9,18 +9,29 @@ app.player = {
   y_max: null,
   blur: null,
   color: "rgb(50, 170, 255)",
-  speed: {value: null, base: null, move: null, gravity: null},
-  move: {key: [], action: [], interval: null},
-  dash: {active: false, velocity: null, interval: null},
-  jump: {active: false, double: false, interval: null}
+  speed: null,
+  move: {key: [], func: []},
+  jump: {active: null, double: null, speed: null, velocity: null},
+  dash: {active: false, velocity: null},
 };
 
 function player_load(){
   player_size_default();
   player_position_default();
   player_position_limit_default();
-  player_speed_default();
+  app.player.speed = (app.player.width + app.player.height) / 60;
+  app.player.move = {key: [], func: []};
+  app.player.jump = {active: false, double: false, speed: app.player.speed / 2, velocity: null};
+  app.player.dash = {active: false, velocity: null};
   player_control_default();
+}
+
+function player_reset(){
+  player_control_remove();
+  player_move_clear();
+  player_move_jump_clear();
+  player_move_dash_clear();
+  player_load();
 }
 
 function player_size_default(){
@@ -41,28 +52,16 @@ function player_position_limit_default(){
   app.player.y_max = app.engine.ground_height - app.player.height;
 }
 
-function player_speed_default(){
-  app.player.speed.value = 1;
-  app.player.speed.base = (app.player.width + app.player.height) / 60;
-  app.player.speed.move = (app.player.speed.base * (1000 / app.config.video.interval)) * app.player.speed.value;
-  app.player.speed.jump = app.player.speed.move / 2;
-  app.player.speed.gravity = app.player.speed.jump;
-}
-
 function player_control_default(){
   control_keydown_action_add("left", "player_move_add", player_move_add, ["left", player_move_left], true);
-  control_keydown_action_add("left", "player_move", player_move, ["left"], true);
   control_keydown_action_add("right", "player_move_add", player_move_add, ["right", player_move_right], true);
-  control_keydown_action_add("right", "player_move", player_move, ["right"], true);
-  control_keydown_action_add("dash", "player_move_dash", player_move_dash, [], false);
   control_keydown_action_add("jump", "player_move_jump", player_move_jump, [], true);
+  control_keydown_action_add("dash", "player_move_dash", player_move_dash, [], false);
 }
 
 function player_control_remove(){
   control_keydown_action_remove("left", "player_move_add");
-  control_keydown_action_remove("left", "player_move");
   control_keydown_action_remove("right", "player_move_add");
-  control_keydown_action_remove("right", "player_move");
   control_keydown_action_remove("dash", "player_move_dash");
   control_keydown_action_remove("jump", "player_move_jump");
   control_keydown_action_remove("jump", "player_move_jump_active");
@@ -76,126 +75,67 @@ function player_control_remove(){
   control_keyup_action_remove("jump", "player_move_jump_double");
 }
 
-function player_move(key){
-  if (app.player.move.key.length > 1) {
-    player_move_clear();
+function player_move_add(key, func){
+  if (app.player.move.func.length > 0) {
+    engine_refresh_remove(app.player.move.func[app.player.move.func.length - 1]);
   }
-  let tmp_index = (app.player.move.action.length - 1);
-  app.player.move.interval = setInterval(app.player.move.action[tmp_index], 1000 / app.config.video.interval);
-}
-
-function player_move_add(key, action){
   app.player.move.key.push(key);
-  app.player.move.action.push(action);
-  control_keyup_action_add(key, "player_move_remove", player_move_remove, [key, action], true);
+  app.player.move.func.push(func);
+  engine_refresh_add(func);
+  control_keyup_action_add(key, "player_move_remove", player_move_remove, [key, func], true);
 }
 
-function player_move_remove(key, action){
-  for (let i = 0; i < app.player.move.key.length; i++) {
-    if (app.player.move.key[i] == key) {
-      app.player.move.key.splice(i, 1);
-      app.player.move.action.splice(i, 1);
-      control_keydown_action_add(key, "player_move_add", player_move_add, [key, action], true);
-      control_keydown_action_add(key, "player_move", player_move, [key], true);
-      player_move_clear();
-      if (app.player.move.key.length > 0) {
-        let tmp_index = (app.player.move.key.length - 1);
-        player_move(app.player.move.key[tmp_index]);
+function player_move_remove(key, func){
+  if (app.player.move.func.indexOf(func) >= 0) {
+    engine_refresh_remove(func);
+    app.player.move.key.splice(app.player.move.key.indexOf(key), 1);
+    app.player.move.func.splice(app.player.move.func.indexOf(func), 1);
+
+    if (app.player.move.func.length > 0) {
+      if (app.player.move.func.indexOf(app.player.move.func[app.player.move.func.length - 1]) >= 0) {
+        engine_refresh_remove(app.player.move.func[app.player.move.func.length - 1]);
       }
-      break;
+      engine_refresh_add(app.player.move.func[app.player.move.func.length - 1]);
     }
+
+    control_keydown_action_add(key, "player_move_add", player_move_add, [key, func], true);
   }
 }
 
 function player_move_clear(){
-  clearInterval(app.player.move.interval);
-}
-
-function player_move_reset(){
-  app.player.move = {key: [], action: [], interval: null, base: null};
+  engine_refresh_remove(player_move_left);
+  engine_refresh_remove(player_move_right);
 }
 
 function player_move_left(){
-  app.player.x -= app.player.speed.move;
+  app.player.x -= app.player.speed * app.engine.refresh.frame;
   if (app.player.x < app.player.x_min) {
     app.player.x = app.player.x_min;
   }
 }
 
 function player_move_right(){
-  app.player.x += app.player.speed.move;
+  app.player.x += app.player.speed * app.engine.refresh.frame;
   if (app.player.x > app.player.x_max) {
     app.player.x = app.player.x_max;
   }
 }
 
-function player_move_dash(){
-  if (!app.player.dash.active) {
-    let tmp_move = app.player.move.key[app.player.move.key.length - 1]
-    if (tmp_move == "right" || tmp_move == "left") {
-      app.player.dash.active = true;
-      app.player.dash.velocity = 2;
-      control_keydown_action_remove("jump", "player_move_jump");
-      control_keydown_action_remove("jump", "player_move_jump_double");
-      control_keyup_action_remove("jump", "player_move_jump_clear");
-      control_keyup_action_remove("jump", "player_move_jump_down");
-      control_keyup_action_remove("jump", "player_move_jump_double");
-      player_move_jump_clear();
-      if (tmp_move == "right") {
-        app.player.dash.interval = setInterval(player_move_dash_right, 1000 / app.config.video.interval, (1000 / app.config.video.interval) / 80);
-      }
-      else if (tmp_move == "left") {
-        app.player.dash.interval = setInterval(player_move_dash_left, 1000 / app.config.video.interval, (1000 / app.config.video.interval) / 80);
-      }
-    }
-  }
-}
-
-function player_move_dash_left(velocity_decrement){
-  app.player.dash.velocity -= velocity_decrement;
-  app.player.x -= app.player.speed.move * app.player.dash.velocity;
-  if (app.player.dash.velocity < 0 || app.player.x < app.player.x_min) {
-    clearInterval(app.player.dash.interval);
-    if (app.player.x < app.player.x_min) {
-      app.player.x = app.player.x_min;
-    }
-    if (app.player.y == app.player.y_max) {
-      player_move_jump_down(1, velocity_decrement);
-    }
-    else {
-      player_move_jump_down(1, velocity_decrement);
-    }
-  }
-}
-
-function player_move_dash_right(velocity_decrement){
-  app.player.dash.velocity -= velocity_decrement;
-  app.player.x += app.player.speed.move * app.player.dash.velocity;
-  if (app.player.dash.velocity < 0 || app.player.x > app.player.x_max) {
-    clearInterval(app.player.dash.interval);
-    if (app.player.x > app.player.x_max) {
-      app.player.x = app.player.x_max;
-    }
-    if (app.player.y == app.player.y_max) {
-      player_move_jump_down(1, velocity_decrement);
-    }
-    else {
-      player_move_jump_down(1, velocity_decrement);
-    }
-  }
-}
-
 function player_move_jump(){
   control_keyup_action_add("jump", "player_move_jump_clear", player_move_jump_clear, [], true);
-  control_keyup_action_add("jump", "player_move_jump_down", player_move_jump_down, [1, (1000 / app.config.video.interval) / 80], true);
+  control_keyup_action_add("jump", "player_move_jump_down", function(){
+    app.player.jump.velocity = 0;
+    engine_refresh_add(player_move_jump_down);
+  }, [], true);
   control_keyup_action_add("jump", "player_move_jump_active", player_move_jump_active, [], true);
   control_keyup_action_add("jump", "player_move_jump_double", function(){
     control_keydown_action_add("jump", "player_move_jump_double", player_move_jump_double, [], true);
   }, [], true);
 
-  app.player.jump.double = true;
   app.player.jump.active = true;
-  player_move_jump_up(4, (1000 / app.config.video.interval) / 80);
+  app.player.jump.double = true;
+  app.player.jump.velocity = app.player.jump.speed * 3;
+  engine_refresh_add(player_move_jump_up);
 }
 
 function player_move_jump_active(){
@@ -210,57 +150,135 @@ function player_move_jump_active(){
 }
 
 function player_move_jump_clear(){
-  clearInterval(app.player.jump.interval);
+  engine_refresh_remove(player_move_jump_up);
+  engine_refresh_remove(player_move_jump_down);
 }
 
-function player_move_jump_up(velocity, velocity_decrement){
-  app.player.jump.interval = setInterval(function(){
-    velocity -= velocity_decrement;
-    if (velocity > 1 && app.player.y > app.player.y_min) {
-      app.player.y -= app.player.speed.jump * velocity - app.player.speed.gravity;
-    }
-    else {
-      control_keyup_action_remove("jump", "player_move_jump_clear");
-      control_keyup_action_remove("jump", "player_move_jump_down");
-      player_move_jump_clear();
-      player_move_jump_down(1, velocity_decrement);
-    }
-  }, 1000 / app.config.video.interval);
+function player_move_jump_up(){
+  let tmp_frame = app.engine.refresh.frame;
+  app.player.jump.velocity -= (app.player.jump.speed / 75) * tmp_frame;
+  let tmp_move = ((app.player.jump.speed + app.player.jump.velocity) * tmp_frame) - (app.player.jump.speed * tmp_frame);
+
+  if (app.player.jump.velocity > 0) {
+    app.player.y -= tmp_move;
+  }
+  else {
+    control_keyup_action_remove("jump", "player_move_jump_clear");
+    control_keyup_action_remove("jump", "player_move_jump_down");
+    player_move_jump_clear();
+    app.player.jump.velocity = 0;
+    engine_refresh_add(player_move_jump_down);
+  }
 }
 
-function player_move_jump_down(velocity, velocity_decrement){
-  app.player.jump.interval = setInterval(function(){
-    velocity += velocity_decrement;
-    if (app.player.y < app.player.y_max) {
-      app.player.y += app.player.speed.jump * velocity - app.player.speed.gravity;
+function player_move_jump_down(){
+  let tmp_frame = app.engine.refresh.frame;
+  app.player.jump.velocity += (app.player.jump.speed / 75) * tmp_frame;
+  let tmp_move = ((app.player.jump.speed + app.player.jump.velocity) * tmp_frame) - (app.player.jump.speed * tmp_frame);
+  let tmp_player_y = app.player.y += tmp_move;
+
+
+  if (tmp_player_y < app.player.y_max) {
+    app.player.y = tmp_player_y;
+  }
+  else {
+    control_keydown_action_remove("jump", "player_move_jump_double");
+    control_keyup_action_remove("jump", "player_move_jump_double");
+    player_move_jump_clear();
+    app.player.jump.double = false;
+    app.player.dash.active = false;
+    app.player.y = app.player.y_max;
+
+    if (app.player.jump.active) {
+      control_keyup_action_remove("jump", "player_move_jump_active");
+      player_move_jump();
     }
     else {
-      control_keydown_action_remove("jump", "player_move_jump_double");
-      control_keyup_action_remove("jump", "player_move_jump_double");
-      player_move_jump_clear();
-      app.player.jump.double = false;
-      app.player.dash.active = false;
-      app.player.y = app.player.y_max;
-
-      if (app.player.jump.active) {
-        control_keyup_action_remove("jump", "player_move_jump_active");
-        player_move_jump();
-      }
-      else {
-        control_keydown_action_remove("jump", "player_move_jump_active");
-        control_keydown_action_add("jump", "player_move_jump", player_move_jump, [], true);
-      }
+      control_keydown_action_remove("jump", "player_move_jump_active");
+      control_keydown_action_add("jump", "player_move_jump", player_move_jump, [], true);
     }
-  }, 1000 / app.config.video.interval);
+  }
 }
 
 function player_move_jump_double(){
   app.player.jump.double = false;
   player_move_jump_clear();
-  player_move_jump_up(4, (1000 / app.config.video.interval) / 80);
+  app.player.jump.velocity = app.player.jump.speed * 3;
+  engine_refresh_add(player_move_jump_up);
 }
 
-function player_explosion(number, velocity, width, height){
+function player_move_dash(){
+  if (!app.player.dash.active) {
+    let tmp_move = app.player.move.key[app.player.move.key.length - 1]
+    if (tmp_move == "right" || tmp_move == "left") {
+      app.player.dash.active = true;
+      app.player.dash.velocity = app.player.jump.speed * 2.5;
+      control_keydown_action_remove("jump", "player_move_jump");
+      control_keydown_action_remove("jump", "player_move_jump_double");
+      control_keyup_action_remove("jump", "player_move_jump_clear");
+      control_keyup_action_remove("jump", "player_move_jump_down");
+      control_keyup_action_remove("jump", "player_move_jump_double");
+      player_move_jump_clear();
+      if (tmp_move == "right") {
+        engine_refresh_add(player_move_dash_right);
+      }
+      else if (tmp_move == "left") {
+        engine_refresh_add(player_move_dash_left);
+      }
+    }
+  }
+}
+
+function player_move_dash_left(){
+  let tmp_frame = app.engine.refresh.frame;
+  app.player.dash.velocity -= (app.player.speed / 75) * tmp_frame;
+  app.player.x -= (app.player.speed + app.player.dash.velocity) * tmp_frame;
+
+  if (app.player.dash.velocity < 0 || app.player.x < app.player.x_min) {
+    engine_refresh_remove(player_move_dash_left);
+    if (app.player.x < app.player.x_min) {
+      app.player.x = app.player.x_min;
+    }
+    if (app.player.y == app.player.y_max) {
+      app.player.jump.velocity = 0;
+      engine_refresh_add(player_move_jump_down);
+    }
+    else {
+      app.player.jump.velocity = 0;
+      engine_refresh_add(player_move_jump_down);
+    }
+  }
+}
+
+function player_move_dash_right(){
+  let tmp_frame = app.engine.refresh.frame;
+  app.player.dash.velocity -= (app.player.speed / 75) * tmp_frame;
+  app.player.x += (app.player.speed + app.player.dash.velocity) * tmp_frame;
+
+  if (app.player.dash.velocity < 0 || app.player.x > app.player.x_max) {
+    engine_refresh_remove(player_move_dash_right);
+    if (app.player.x > app.player.x_max) {
+      app.player.x = app.player.x_max;
+    }
+    if (app.player.y == app.player.y_max) {
+      app.player.jump.velocity = 0;
+      engine_refresh_add(player_move_jump_down);
+    }
+    else {
+      app.player.jump.velocity = 0;
+      engine_refresh_add(player_move_jump_down);
+    }
+  }
+}
+
+function player_move_dash_clear(){
+  engine_refresh_remove(player_move_dash_right);
+  engine_refresh_remove(player_move_dash_left);
+}
+
+function player_explosion(number, width, height){
+  player_explosion_stop();
+
   app.player.explosion = {
     width: app.player.width / width,
     height: app.player.height / height,
@@ -277,9 +295,9 @@ function player_explosion(number, velocity, width, height){
     app.player.explosion.list.push({
       x: tmp_x,
       y: tmp_y,
-      velocity: (Math.floor(Math.random() * 100) / 50) * velocity,
-      vertical: app.player.speed.jump,
-      horizontal: ((Math.floor(Math.random() * 100) / 50) - (Math.floor(Math.random() * 100) / 50)) * (app.player.speed.jump / 4)
+      velocity: (Math.floor(Math.random() * 100) / 50) * (app.player.speed * 0.85),
+      vertical: app.player.jump.speed / 2,
+      horizontal: ((Math.floor(Math.random() * 100) / 50) - (Math.floor(Math.random() * 100) / 50)) * (app.player.speed / 5)
     });
   }
 
@@ -288,20 +306,21 @@ function player_explosion(number, velocity, width, height){
   engine_element_remove("engine_draw_player");
   engine_element_add("engine_draw_player_explosion", engine_draw_player_explosion);
 
-  app.player.explosion.interval = setInterval(player_explosion_move, 1000 / app.config.video.interval, (1000 / app.config.video.interval) / 160);
+  engine_refresh_add(player_explosion_move);
 }
 
-function player_explosion_move(velocity_decrement){
+function player_explosion_move(){
   let tmp_length = 0;
+  let tmp_frame = app.engine.refresh.frame;
   for (let i = 0; i < app.player.explosion.list.length; i++) {
-    app.player.explosion.list[i].velocity -= velocity_decrement;
+    app.player.explosion.list[i].velocity -= (app.player.explosion.list[i].vertical / 75) * tmp_frame;
     if (app.player.explosion.list[i].y < app.player.explosion.y_max) {
-      app.player.explosion.list[i].y -= app.player.explosion.list[i].vertical * app.player.explosion.list[i].velocity - app.player.speed.gravity;
+      app.player.explosion.list[i].y -= (app.player.explosion.list[i].vertical + app.player.explosion.list[i].velocity) * tmp_frame - (app.player.jump.speed * tmp_frame);
       if (app.player.explosion.list[i].velocity > 1) {
-        app.player.explosion.list[i].x += app.player.explosion.list[i].horizontal * app.player.explosion.list[i].velocity;
+        app.player.explosion.list[i].x += (app.player.explosion.list[i].horizontal * app.player.explosion.list[i].velocity) * tmp_frame;
       }
       else {
-        app.player.explosion.list[i].x += app.player.explosion.list[i].horizontal;
+        app.player.explosion.list[i].x += app.player.explosion.list[i].horizontal * tmp_frame;
       }
     }
     else {
@@ -310,12 +329,12 @@ function player_explosion_move(velocity_decrement){
     }
   }
   if (tmp_length == app.player.explosion.list.length) {
-    clearInterval(app.player.explosion.interval);
+    engine_refresh_remove(player_explosion_move);
   }
 }
 
 function player_explosion_stop(){
+  engine_refresh_remove(player_explosion_move);
   engine_element_remove("engine_draw_player_explosion");
-  clearInterval(app.player.explosion.interval);
   delete app.player.explosion;
 }

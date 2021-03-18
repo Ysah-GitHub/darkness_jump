@@ -3,15 +3,11 @@ app.stage = {
   event: {list: [], timeout: null},
   list: [
     "bonetrousle",
-    // "spider_dance"
+    "spider_dance"
   ]
 };
 
 function stage_start(){
-  document.getElementById("menu").remove();
-
-  stage_reset();
-  app.stage.current.completed = null;
   engine_element_add("engine_draw_entity", engine_draw_entity);
 
   score_interface();
@@ -27,74 +23,76 @@ function stage_start(){
     stage_timer_start();
   }
 
-  app.entity.move.interval = setInterval(entity_move, 1000 / app.config.video.interval);
+  engine_refresh_add(entity_move);
 
   window["stage_" + app.stage.current.name + "_start_" + app.stage.current.difficulty]();
+  document.getElementById("menu").remove();
 }
 
-function stage_over(){
-  player_explosion(50, 2, 4, 4);
-  app.stage.current.completed = false;
-  stage_end();
-}
+function stage_end(completed){
+  entity_move_stop();
+  entity_spawn_clear();
 
-function stage_end(){
+  stage_timer_stop();
   stage_event_clear();
   stage_event_reset();
 
-  entity_spawn_clear();
-  entity_move_stop();
-
   music_stop();
 
-  if (app.stage.current.completed == null) {
+  if (completed) {
     app.score[app.stage.current.name][app.stage.current.difficulty].completed = true;
     entity_explosion_all();
     entity_remove_all();
+    setTimeout(stage_close, 500);
   }
-  delete app.stage.current.completed;
+  else {
+    player_explosion(50, 4, 4);
+    stage_end_interface(completed);
+  }
 
   score_update();
   score_unset();
   score_save();
-
-  stage_timer_stop();
-
-  stage_end_interface();
-  control_keydown_action_add("start", "engine_start_stage", stage_start, [app.stage.current], true);
 }
 
-function stage_reset(){
-  player_move_clear();
-  player_move_reset();
-  player_move_jump_clear();
-  player_speed_default();
-  player_position_default();
-  player_control_remove();
-  player_control_default();
+function stage_restart(){
   if (app.player.explosion != null) {
     player_explosion_stop();
+    engine_element_add("engine_draw_player", engine_draw_player);
+  }
+
+  player_reset();
+
+  entity_reset();
+  entity_move_value_default();
+  engine_element_remove("engine_draw_entity");
+
+  stage_start();
+}
+
+function stage_close(){
+  control_keydown_action_remove("start", "stage_restart");
+  if (document.getElementById("menu")) {
+    document.getElementById("menu").remove();
+  }
+
+  delete app.stage.timer;
+  if (app.config.interface.timer == "visible") {
+    document.getElementById("stage_timer").remove();
+  }
+  score_interface_remove();
+
+  player_reset();
+  if (app.player.explosion != null) {
+    player_explosion_stop();
+    engine_element_add("engine_draw_player", engine_draw_player);
   }
 
   entity_reset();
   entity_move_value_default();
-
-  engine_element_remove("engine_draw_player");
   engine_element_remove("engine_draw_entity");
-  engine_element_add("engine_draw_player", engine_draw_player);
-}
 
-function stage_return(){
-  control_keydown_action_remove("start", "engine_start_stage");
-  document.getElementById("menu").remove();
-  menu_selection();
-  stage_reset();
-  score_interface_remove();
-
-  stage_timer_remove();
-  if (app.config.interface.timer == "visible") {
-    stage_timer_interface_remove();
-  }
+  menu_selection(app.stage.current.name);
 }
 
 function stage_event(){
@@ -131,14 +129,11 @@ function stage_timer_stop(){
   clearInterval(app.stage.timer.interval);
 }
 
-function stage_timer_remove(){
-  delete app.stage.timer;
-}
-
 function stage_timer_interface(){
   if (!document.getElementById("stage_timer")) {
     let tmp_timer = document.createElement("span");
     tmp_timer.id = "stage_timer";
+    tmp_timer.className = "text";
     document.getElementById("interface").prepend(tmp_timer);
   }
 }
@@ -154,26 +149,37 @@ function stage_timer_interface_update(){
   document.getElementById("stage_timer").textContent = tmp_minute + ":" + tmp_second;
 }
 
-function stage_timer_interface_remove(){
-    document.getElementById("stage_timer").remove();
-}
+function stage_end_interface(completed){
+  if (!document.getElementById("menu")) {
+    let tmp_menu = document.createElement("div")
+    tmp_menu.id = "menu";
+    tmp_menu.className = "stage";
 
-function stage_end_interface(){
-  let tmp_menu = document.createElement("div")
-  tmp_menu.id = "menu";
-  tmp_menu.className = "stage";
+    if (!completed) {
+      let tmp_stage_status = document.createElement("div");
+      tmp_stage_status.id = "menu_stage_game_over";
+      tmp_stage_status.textContent = translation().game_over;
+      tmp_stage_status.className = "text shadow";
+      tmp_menu.append(tmp_stage_status);
+    }
 
-  let tmp_stage = document.createElement("div");
-  tmp_stage.className = "menu_stage";
-  tmp_stage.textContent = "Restart";
-  tmp_stage.onclick = function(){control_keydown_action("start")};
-  tmp_menu.append(tmp_stage);
+    let tmp_restart = document.createElement("span");
+    tmp_restart.id = "menu_stage_restart";
+    tmp_restart.className = "icon";
+    tmp_restart.onclick = function(){control_keydown_action("start")};
+    tmp_restart.append(icon_restart(app.engine.height * 0.15, app.engine.height * 0.15));
+    tmp_menu.append(tmp_restart);
 
-  let tmp_menu_return = document.createElement("div");
-  tmp_menu_return.id = "menu_stage_return";
-  tmp_menu_return.textContent = "Return";
-  tmp_menu_return.onclick = stage_return;
-  tmp_menu.append(tmp_menu_return);
+    let tmp_menu_return_container = document.createElement("div");
+    let tmp_menu_return = document.createElement("span");
+    tmp_menu_return.id = "menu_stage_return";
+    tmp_menu_return.className = "text";
+    tmp_menu_return.textContent = translation().return;
+    tmp_menu_return.onclick = stage_close;
+    tmp_menu_return_container.append(tmp_menu_return);
+    tmp_menu.append(tmp_menu_return_container);
 
-  document.getElementById("interface").append(tmp_menu);
+    document.getElementById("interface").append(tmp_menu);
+    control_keydown_action_add("start", "stage_restart", stage_restart, [app.stage.current], true);
+  }
 }

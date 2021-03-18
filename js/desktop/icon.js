@@ -37,6 +37,18 @@ function icon_return(width, height){
   return icon_constructor(width, height, "rgb(65, 65, 65)", icon_return_draw);
 }
 
+function icon_restart(width, height){
+  return icon_constructor(width, height, "rgb(125, 125, 125)", icon_restart_draw);
+}
+
+function icon_link(width, height){
+  return icon_constructor(width, height, "rgb(65, 65, 65)", icon_link_draw);
+}
+
+function icon_padlock(width, height){
+  return icon_constructor(width, height, "rgb(65, 65, 65)", icon_padlock_draw);
+}
+
 function icon_close_draw(element, color, width, height){
   let tmp_draw = element.getContext("2d");
   tmp_draw.clearRect(0, 0, width, height);
@@ -165,9 +177,77 @@ function icon_return_draw(element, color, width, height){
     [44, 26, 4, 18],
     [20, 44, 28, 4],
     [24, 16, 4, 16],
-    [20, 19, 4, 10],
+    [20, 19, 4, 10]
   ];
   for (let i = 0; i < tmp_draw_value.length; i++) {
     icon_fillRect(tmp_draw, width, height, tmp_draw_value[i]);
   }
+}
+
+function icon_restart_draw(element, color, width, height){
+  let tmp_draw = element.getContext("2d");
+  tmp_draw.clearRect(0, 0, width, height);
+  tmp_draw.fillStyle = color;
+
+  tmp_draw.strokeStyle = color;
+  tmp_draw.lineWidth = width / 10;
+  tmp_draw.beginPath();
+  tmp_draw.arc(width / 2, height / 2, height / 4, 1 * Math.PI, 2.5 * Math.PI);
+  tmp_draw.stroke();
+  tmp_draw.closePath();
+
+  tmp_draw.lineWidth = 1;
+  tmp_draw.beginPath();
+  tmp_draw.moveTo(width * 0.15, height * 0.5);
+  tmp_draw.lineTo(width * 0.35, height * 0.5);
+  tmp_draw.lineTo(width * 0.25, height * 0.62);
+  tmp_draw.lineTo(width * 0.15, height * 0.5);
+  tmp_draw.fill();
+}
+
+function icon_link_draw(element, color, width, height){
+  let tmp_draw = element.getContext("2d");
+  tmp_draw.clearRect(0, 0, width, height);
+  tmp_draw.fillStyle = color;
+
+  let tmp_draw_value = [
+    [4, 4, 24, 4],
+    [40, 4, 20, 4],
+    [4, 8, 4, 48],
+    [56, 8, 4, 16],
+    [56, 36, 4, 20],
+    [4, 56, 56, 4]
+  ];
+  for (let i = 0; i < tmp_draw_value.length; i++) {
+    icon_fillRect(tmp_draw, width, height, tmp_draw_value[i]);
+  }
+
+  tmp_draw.strokeStyle = color;
+  tmp_draw.lineWidth = (4 / 64) * width;
+  tmp_draw.beginPath();
+  tmp_draw.moveTo(width * 0.5, height * 0.5);
+  tmp_draw.lineTo(width - ((8 / 64) * width), (8 / 64) * height);
+  tmp_draw.stroke();
+}
+
+function icon_padlock_draw(element, color, width, height){
+  let tmp_draw = element.getContext("2d");
+  tmp_draw.clearRect(0, 0, width, height);
+  tmp_draw.fillStyle = color;
+
+  let tmp_draw_value = [
+    [9, 32, 46, 10],
+    [9, 42, 19, 8],
+    [36, 42, 19, 9],
+    [9, 50, 46, 10]
+  ];
+  for (let i = 0; i < tmp_draw_value.length; i++) {
+    icon_fillRect(tmp_draw, width, height, tmp_draw_value[i]);
+  }
+
+  tmp_draw.strokeStyle = color;
+  tmp_draw.lineWidth = (4 / 64) * width;
+  tmp_draw.beginPath();
+  tmp_draw.arc(width * 0.5, height * 0.4, height / 4, 1 * Math.PI, 2 * Math.PI);
+  tmp_draw.stroke();
 }

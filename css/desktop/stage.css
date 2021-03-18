@@ -1,35 +1,38 @@
-.menu_stage{
-  width: calc(var(--engine_height) * 0.2);
-  padding: calc(var(--engine_height) * 0.015);
-  margin-right: auto;
-  margin-left: auto;
+#menu.stage{
+  height: 100%;
+  overflow: auto;
   text-align: center;
-  font-family: "gb";
-  color: rgb(125, 125, 125);
-  font-size: calc(var(--engine_height) * 0.02);
-  user-select: none;
-  transition: 0.1s linear;
 }
-.menu_stage:hover{
-  cursor: pointer;
-  color: rgb(255, 255, 255);
-  transform: scale(1.2);
+
+#menu_stage_game_over{
+  margin-top: calc(var(--engine_height) * 0.25);
+  color: rgb(255, 75, 75);
+  font-size: calc(var(--engine_height) * 0.03);
+}
+
+#menu_stage_stage_complete{
+  color: rgb(50, 70, 255);
+  font-size: calc(var(--engine_height) * 0.03);
+}
+
+#menu_stage_restart{
+  margin-top: calc(var(--engine_height) * 0.05);
+}
+#menu_stage_restart:hover{
+  transform: scale(1.1);
+  filter: brightness(1.5);
 }
 
 #menu_stage_return{
-  width: calc(var(--engine_height) * 0.2);
-  margin: calc(var(--engine_height) * 0.03) auto 0 auto;
-  padding: calc(var(--engine_height) * 0.015);
-  text-align: center;
-  font-family: "gb";
-  color: rgb(125, 125, 125);
-  font-size: calc(var(--engine_height) * 0.015);
-  user-select: none;
-  transition: 0.1s linear;
+  margin-top: calc(var(--engine_height) * 0.05);
+  padding: calc(var(--engine_height) * 0.01);
+  color: rgb(80, 80, 80);
+  font-size: calc(var(--engine_height) * 0.013);
+  transition: 0.1s;
 }
 #menu_stage_return:hover{
   cursor: pointer;
-  color: rgb(255, 255, 255);
+  color: rgb(175, 175, 175);
   transform: scale(1.2);
 }
 
@@ -37,18 +40,14 @@
   position: absolute;
   right: 0;
   margin: calc(var(--engine_height) * 0.08) calc(var(--engine_height) * 0.1) 0 0;
-  font-family: "gb";
   color: rgb(125, 125, 125);
   font-size: calc(var(--engine_height) * 0.015);
-  user-select: none;
 }
 
 #score{
   position: absolute;
   right: 0;
   margin: calc(var(--engine_height) * 0.12) calc(var(--engine_height) * 0.1) 0 0;
-  font-family: "gb";
   color: rgb(125, 125, 125);
   font-size: calc(var(--engine_height) * 0.015);
-  user-select: none;
 }

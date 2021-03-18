@@ -9,9 +9,6 @@
   height: calc(var(--engine_height) * 0.5);
   margin-top: calc(var(--engine_height) * 0.25);
 }
-#menu.stage{
-  margin-top: calc(var(--engine_height) * 0.35);
-}
 
 #menu_main_start, #menu_main_options{
   width: calc(var(--engine_height) * 0.2);
@@ -37,17 +34,18 @@
   display: inline-block;
   width: calc(var(--engine_height) * 0.25);
   height: 100%;
-  margin-left: calc(var(--engine_width) * 0.5 - var(--engine_height) * 0.66);
-  border-radius: calc(var(--engine_height) * 0.004);
+  margin-left: calc(var(--engine_width) * 0.5 - var(--engine_height) * 0.63);
 }
 
 .menu_selection_left_stage{
-  width: 95%;
-  line-height: calc(var(--engine_height) * 0.03);
+  width: 100%;
+  line-height: calc(var(--engine_height) * 0.05);
   margin-bottom: calc(var(--engine_height) * 0.004);
   padding-left: 5%;
   background-color: rgb(55, 55, 55);
+  border-left: calc(var(--engine_height) * 0.02) solid rgb(55, 55, 55);
   border-radius: calc(var(--engine_height) * 0.004);
+  box-sizing: border-box;
   transition: 0.1s linear;
 }
 .menu_selection_left_stage:hover{
@@ -55,7 +53,7 @@
   background-color: rgb(65, 65, 65);
 }
 .menu_selection_left_stage.selected{
-  margin-left: calc(var(--engine_height) * 0.03);
+  border-left: calc(var(--engine_height) * 0.02) solid rgb(40, 40, 40);
 }
 
 #menu_selection_right{
@@ -64,9 +62,10 @@
   width: calc(var(--engine_height) * 0.7);
   height: 100%;
   vertical-align: top;
-  margin-left: calc(var(--engine_height) * 0.06);
+  margin-left: calc(var(--engine_height) * 0.03);
   background-color: rgb(55, 55, 55);
   border-radius: calc(var(--engine_height) * 0.004);
+  overflow: hidden;
 }
 
 #menu_selection_right_stage{
@@ -75,6 +74,7 @@
   text-align: center;
   color: rgb(200, 200, 200);
   font-size: calc(var(--engine_height) * 0.015);
+  background-color: rgb(40, 40, 40);
 }
 
 #menu_selection_icon_close{
@@ -82,54 +82,86 @@
   right: 0;
 }
 
-#menu_selection_difficulty{
+#menu_selection_information{
+  display: inline-block;
+  width: 75%;
   margin-top: calc(var(--engine_height) * 0.05);
-  text-align: center;
+  vertical-align: top;
 }
 
-#menu_selection_difficulty > *{
-  padding: calc(var(--engine_height) * 0.02);
+#menu_selection_link_music{
+  padding: calc(var(--engine_height) * 0.01) 0;
+}
+
+#menu_selection_link_music:hover #menu_selection_music_icon_link{
+  filter: brightness(3);
+}
+
+#menu_selection_music{
+  display: inline-block;
+  line-height: calc(var(--engine_height) * 0.02);
+  margin: calc(var(--engine_height) * 0.02) 0 0 10%;
   color: rgb(100, 100, 100);
+  font-size: calc(var(--engine_height) * 0.008);
+}
+
+#menu_selection_music_icon_link{
+  margin-left: 2%;
+  vertical-align: middle;
+}
+
+#menu_selection_score{
+  margin: calc(var(--engine_height) * 0.04) 0 0 10%;
+  color: rgb(150, 150, 150);
+}
+
+#menu_selection_difficulty{
+  display: inline-block;
+  width: 25%;
+  margin-top: calc(var(--engine_height) * 0.05);
+}
+
+#menu_selection_difficulty > *.difficulty{
+  width: 80%;
+  line-height: calc(var(--engine_height) * 0.04);
+  margin-bottom: calc(var(--engine_height) * 0.004);
+  text-align: center;
+  color: rgb(100, 100, 100);
+  background-color: rgb(50, 50, 50);
+  border-radius: calc(var(--engine_height) * 0.004);
   transition: 0.1s linear;
 }
-#menu_selection_difficulty > *:hover{
+#menu_selection_difficulty > *.selectable.difficulty:hover{
   cursor: pointer;
   color: rgb(200, 200, 200);
-  transform: scale(1.1);
 }
-#menu_selection_difficulty > *.selected{
+#menu_selection_difficulty > *.difficulty.selected{
   cursor: pointer;
   color: rgb(255, 255, 255);
-  transform: scale(1.3);
+}
+
+#menu_selection_difficulty > *.icon{
+  width: 20%;
+  vertical-align: middle;
+  text-align: center;
+}
+#menu_selection_difficulty > *.icon:hover{
+  cursor: auto;
 }
 
 #menu_selection_start{
-  width: 20%;
-  margin: calc(var(--engine_height) * 0.07) auto 0 auto;
-  padding: 4%;
-  text-align: center;
+  width: 80%;
+  line-height: calc(var(--engine_height) * 0.04);
+  margin-top: calc(var(--engine_height) * 0.1);
   color: rgb(175, 175, 175);
-  font-size: calc(var(--engine_height) * 0.02);
+  text-align: center;
+  font-size: calc(var(--engine_height) * 0.015);
+  border-radius: calc(var(--engine_height) * 0.004);
+  background-color: rgb(40, 40, 40);
   transition: 0.1s linear;
 }
 #menu_selection_start:hover{
   cursor: pointer;
   color: rgb(255, 255, 255);
-  transform: scale(1.2);
-}
-
-#menu_selection_score{
-  margin: calc(var(--engine_height) * 0.1) 0 0 10%;
-  color: rgb(150, 150, 150);
-}
-
-#menu_selection_music{
-  margin: calc(var(--engine_height) * 0.02) 0 0 10%;
-  color: rgb(100, 100, 100);
-  user-select: text;
-}
-
-#menu_selection_music_duration{
-  margin: calc(var(--engine_height) * 0.02) 0 0 10%;
-  color: rgb(100, 100, 100);
+  transform: scale(1.15);
 }

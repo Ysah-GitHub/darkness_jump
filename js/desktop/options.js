@@ -38,18 +38,18 @@ function options_right(name){
   tmp_options.id = "options_right";
   tmp_options.className = name;
 
-  let tmp_title = document.createElement("span");
-  tmp_title.id = "options_title";
-  tmp_title.className = "text";
-  tmp_title.textContent = name.charAt(0).toUpperCase() + name.slice(1);;
-  tmp_options.append(tmp_title);
-
   let tmp_icon_close = document.createElement("span");
   tmp_icon_close.id = "options_icon_close";
   tmp_icon_close.className = "icon close";
   tmp_icon_close.onclick = function(){document.getElementById("options").remove(); menu_main_interface()};
   tmp_icon_close.append(icon_close(app.engine.height * 0.05, app.engine.height * 0.05));
   tmp_options.append(tmp_icon_close);
+
+  let tmp_title = document.createElement("div");
+  tmp_title.id = "options_title";
+  tmp_title.className = "text";
+  tmp_title.textContent = translation()[name];
+  tmp_options.append(tmp_title);
 
   window["options_right_" + name](tmp_options);
 
@@ -58,14 +58,13 @@ function options_right(name){
 
 function options_right_video(tmp_options){
   let tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Resolution"));
+  tmp_container.append(options_right_name(translation().resolution));
 
   let tmp_select = document.createElement("select");
   tmp_select.className = "text options_input_select";
   tmp_select.onchange = function(){
     app.config.video.resolution = this.children[this.value].textContent;
     app_config_save();
-
     engine_resolution(app.config.video.resolution);
     engine_resolution_update()
     options_interface_reload("video");
@@ -83,71 +82,11 @@ function options_right_video(tmp_options){
   }
   tmp_container.append(tmp_select);
   tmp_options.append(tmp_container);
-
-  tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Framerate"));
-
-  tmp_select = document.createElement("select");
-  tmp_select.className = "text options_input_select";
-  tmp_select.onchange = function(){
-    engine_refresh_stop();
-    if (this.value == 0) {
-      app.config.video.framerate = this.children[this.value].textContent;
-    }
-    else {
-      app.config.video.framerate = Number(this.children[this.value].textContent);
-    }
-    engine_refresh_start();
-    app_config_save();
-  };
-
-  tmp_option_array = ["Auto", 30, 60, 75, 120, 144, 240];
-  for (let i = 0; i < tmp_option_array.length; i++) {
-    let tmp_option = document.createElement("option");
-    tmp_option.value = [i];
-    tmp_option.textContent = tmp_option_array[i];
-    if (app.config.video.framerate == tmp_option_array[i]) {
-      tmp_option.setAttribute("selected", "");
-    }
-    tmp_select.append(tmp_option);
-  }
-  tmp_container.append(tmp_select);
-  tmp_options.append(tmp_container);
-
-  tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Interval"));
-
-  tmp_select = document.createElement("select");
-  tmp_select.className = "text options_input_select";
-  tmp_select.onchange = function(){
-    app.config.video.interval = this.children[this.value].textContent;
-    player_speed_default();
-    app_config_save();
-  };
-
-  tmp_option_array = [50, 75, 100, 125, 150, 175, 200, 225, 250];
-  for (let i = 0; i < tmp_option_array.length; i++) {
-    let tmp_option = document.createElement("option");
-    tmp_option.value = [i];
-    tmp_option.textContent = tmp_option_array[i];
-    if (app.config.video.interval == tmp_option_array[i]) {
-      tmp_option.setAttribute("selected", "");
-    }
-    tmp_select.append(tmp_option);
-  }
-  tmp_container.append(tmp_select);
-  tmp_options.append(tmp_container);
-
-  tmp_option_array = ["hidden", "visible"];
-  tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Explosion"));
-  tmp_container.append(options_right_select(app.config.video, "explosion", tmp_option_array));
-  tmp_options.append(tmp_container);
 }
 
 function options_right_interface(tmp_options){
   let tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Ground Color"));
+  tmp_container.append(options_right_name(translation().ground_color));
 
   let tmp_input = document.createElement("span");
   tmp_input.id = "options_interface_ground_color";
@@ -183,55 +122,55 @@ function options_right_interface(tmp_options){
 
   let tmp_option_array = ["en", "fr"];
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Language"));
+  tmp_container.append(options_right_name(translation().language));
   tmp_container.append(options_right_select(app.config.interface, "language", tmp_option_array));
   tmp_options.append(tmp_container);
 
   tmp_option_array = ["hidden", "visible"];
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Score"));
+  tmp_container.append(options_right_name(translation().score));
   tmp_container.append(options_right_select(app.config.interface, "score", tmp_option_array));
   tmp_options.append(tmp_container);
 
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Timer"));
+  tmp_container.append(options_right_name(translation().timer));
   tmp_container.append(options_right_select(app.config.interface, "timer", tmp_option_array));
   tmp_options.append(tmp_container);
 }
 
 function options_right_input(tmp_options){
   let tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Jump"));
+  tmp_container.append(options_right_name(translation().jump));
   tmp_container.append(options_right_input_key("jump"));
   tmp_container.append(options_right_input_icon_default("jump"));
   tmp_options.append(tmp_container);
 
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Left"));
+  tmp_container.append(options_right_name(translation().left));
   tmp_container.append(options_right_input_key("left"));
   tmp_container.append(options_right_input_icon_default("left"));
   tmp_options.append(tmp_container);
 
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Right"));
+  tmp_container.append(options_right_name(translation().right));
   tmp_container.append(options_right_input_key("right"));
   tmp_container.append(options_right_input_icon_default("right"));
   tmp_options.append(tmp_container);
 
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Dash"));
+  tmp_container.append(options_right_name(translation().dash));
   tmp_container.append(options_right_input_key("dash"));
   tmp_container.append(options_right_input_icon_default("dash"));
   tmp_options.append(tmp_container);
 
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Start"));
+  tmp_container.append(options_right_name(translation().enter));
   tmp_container.append(options_right_input_key("start"));
   tmp_container.append(options_right_input_icon_default("start"));
   tmp_options.append(tmp_container);
 
   tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Return"));
+  tmp_container.append(options_right_name(translation().return));
   tmp_container.append(options_right_input_key("return"));
   tmp_container.append(options_right_input_icon_default("return"));
   tmp_options.append(tmp_container);
@@ -239,7 +178,7 @@ function options_right_input(tmp_options){
 
 function options_right_audio(tmp_options){
   let tmp_container = options_right_container();
-  tmp_container.append(options_right_name("Music"));
+  tmp_container.append(options_right_name(translation().music));
 
   let tmp_input = document.createElement("input");
   tmp_input.id = "options_music_input_range";
@@ -257,7 +196,7 @@ function options_right_audio(tmp_options){
 
   tmp_input = document.createElement("input");
   tmp_input.id = "options_music_input_number";
-  tmp_input.className = "text options_input_number";
+  tmp_input.className = "text options_input_range_number";
   tmp_input.type = "number";
   tmp_input.min = "0";
   tmp_input.max = "100";
@@ -277,7 +216,7 @@ function options_right_input_key(key){
   tmp_key.className = "text options_input_key";
   tmp_key.textContent = app.config.input[key].key;
   tmp_key.onmouseover = function(){
-    this.textContent = "Press key";
+    this.textContent = "_";
     window.onkeydown = function(e){
       if (event.keyCode == 32) {
         app.config.input[key].key = "Space";

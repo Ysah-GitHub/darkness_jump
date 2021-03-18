@@ -1,0 +1,27 @@
+function translation(){
+  return {
+    audio: "Audio",
+    dash: "Dash",
+    easy: "Easy",
+    enter: "Enter",
+    game_over: "Game Over",
+    ground_color: "Ground Color",
+    hard: "Hard",
+    impossible: "Impossible",
+    input: "Input",
+    interface: "Interface",
+    jump: "Jump",
+    language: "Language",
+    left: "Left",
+    medium: "Medium",
+    music: "Music",
+    options: "Options",
+    resolution: "Resolution",
+    return: "Return",
+    right: "Right",
+    score: "Score",
+    start: "Start",
+    timer: "Timer",
+    video: "Video",
+  };
+}
